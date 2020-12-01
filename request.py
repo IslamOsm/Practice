@@ -136,7 +136,8 @@ if __name__ == "__main__":
     client1 = Client(main_url)
     req = client1.creating_session_adding(auth_data=auth_data, auth_url="auth/login/", add_data=add_data,
                                           add_url="admin/users/add")
-
+    
+    print("Checking request:")
     if req == 200:
         print("Adding was successful")
     else:
