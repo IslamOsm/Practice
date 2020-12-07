@@ -2,8 +2,9 @@ import base64
 import json
 import requests
 from bs4 import BeautifulSoup
-from __init__ import testrail
 import configparser
+
+from TestRail import APIClient
 
 
 class Client:
@@ -90,7 +91,7 @@ if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read("config.ini")
 
-    client1 = testrail.APIClient(config["TestRail"]["url"])
+    client1 = APIClient(config["TestRail"]["url"], config["TestRail"]["username"], config["TestRail"]["password"])
     client1.user = config["TestRail"]["username"]
     client1.password = config["TestRail"]["password"]
 
