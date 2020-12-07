@@ -4,7 +4,6 @@ import json
 import requests
 
 
-
 class APIClient:
     def __init__(self, base_url, user, password):
         self.user = user
@@ -80,7 +79,6 @@ class APIClient:
                     return response.json(), response.status_code
                 except: # Nothing to return
                     return {}
-
 
 
 class APIError(Exception):
