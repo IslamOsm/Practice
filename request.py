@@ -5,11 +5,17 @@ import configparser
 
 class Client:
     """
-    Class Client is used for authentication in TestRail and for adding and receiving information from this site
+    CLient for TestRail interaction.
     """
 
-    def __init__(self, base_url: str, username: str, password: str):
-
+    def __init__(self, base_url: str, email: str, password: str):
+         """
+        Initialize Client
+        :param base_url: URL to TestRail
+        :param email: TestRail user email for authentication
+        :param password: TestRail user password for authentication
+        :return: status code
+        """       
         self.sess = requests.Session()
         if not base_url.endswith('/'):
             base_url += '/'
@@ -71,6 +77,7 @@ if __name__ == "__main__":
     tr_config = config["TestRail"]
     username = tr_config["username"]
     password = tr_config["password"]
+    base_url = tr_config["url_notAPI"]
 
-    client = Client(tr_config["url_notAPI"], username, password)
-    client.add_user("David Bowie", "DB.official@nowhere.com")
+    client = Client(base_url, username, password)
+    client.add_user("David Bowie", "db.official@nowhere.com")
