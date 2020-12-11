@@ -7,68 +7,81 @@ class Client:
     """
     Class Client is used for authentication in TestRail and for adding and receiving information from this site
     """
-    def __init__(self, base_url: str, auth_data: dict()):
 
+
+    def __init__(self, base_url: str, username: str, password: str):
+        
+        self.sess = requests.Session()
         if not base_url.endswith('/'):
             base_url += '/'
         self.__url = base_url
-        self.__auth_url = self.__url + "auth/login"
-        self.__add_url = self.__url + "admin/users/add"
-        self.sess = requests.Session()
-        self.auth_data = auth_data
-        self.token = ""
+        self.auth_data = {"name": username, "password": password, "rememberme": "1"}
+        self.__auth()
 
-        if self.sess.get(self.__auth_url).status_code == 200:
-            if self.sess.post(self.__auth_url, self.auth_data).status_code == 200:
-                
+
+    def __auth(self):
+        """
+        Authenticate user
+        """
+        auth_url = self.__url + "auth/login"
+        ping_response = self.sess.get(auth_url)
+        if ping_response.status_code == 200:
+            auth_response = self.sess.post(auth_url, self.auth_data)
+            if auth_response.status_code == 200:
                 contents = self.sess.get(self.__url + "dashboard").content
                 soup = BeautifulSoup(contents, 'lxml')
                 self.token = soup.find('input', {'name': '_token'}).get('value')
-                
-                print("Auth was successful")
+                print("Succesfully authenticated to {}".format(self.__url))
             else:
-                print("Error: " + str(self.sess.post(self.__auth_url, self.auth_data).status_code))
-                return None
+                raise Exception("Error. Authentication Failed, response code: " + str(auth_response.status_code))
         else:
-            print("Error: " + str(self.sess.get(self.__auth_url).status_code))
-            return None
+            raise Exception("Error. Unable to reach TestRail: " + str(ping_response.status_code))
 
-    def add_user(self, add_data: dict) -> int:
+
+    def add_user(self, username: str, email: str) -> int:
         """
-        Post request for adding the user
-        :param add_data: data for adding the user
+        Add user to TestRail with username and email
+        :param username: username
+        :param email: email
         :return: status code
         """
-        add_data['_token'] = self.token
-        print(self.__add_url)
-        print(add_data)
-        response = self.sess.post(self.__add_url, add_data)
+        add_url = self.__url + "admin/users/add"
+        add_data = {"name": username, "email": email,
+                    "confirm": self.auth_data["password"],
+                    "password": self.auth_data["password"],
+                    "_token": self.token,
+                    "notifications": 1, "language": "en",
+                    "theme": 0, "locale": "ru-ru", "timezone": "America/Godthab",
+                    "invite": 1, "role_id": 1, "is_active": 1, "js_test": 1}
+
+        response = self.sess.post(add_url, add_data)
+        if response.status_code == 200:
+            print("Succesfully added user: {}, {}".format(username, email))
+        else:
+            raise Exception("Error adding user, response code {}".format(response.status_code))
         return response.content
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read("config.ini")
+    tr_config = config["TestRail"]
+    main_url = tr_config["url_notAPI"]
 
-    main_url = config["TestRail"]["url_notAPI"]
+    # add_data = {"name": tr_config["TestRail"]["name"],
+    #             "email": tr_config["TestRail"]["email"],
+    #             "notifications": tr_config["TestRail"]["notifications"],
+    #             "language": tr_config["TestRail"]["language"],
+    #             "theme": config["TestRail"]["theme"],
+    #             "locale": config["TestRail"]["locale"],
+    #             "timezone": config["TestRail"]["timezone"],
+    #             "invite": config["TestRail"]["theme"], "password": config["TestRail"]["password"],
+    #             "confirm": config["TestRail"]["password"],
+    #             "role_id": config["TestRail"]["role_id"],
+    #             "is_active": config["TestRail"]["is_active"],
+    #             "js_test": config["TestRail"]["js_test"]}
+    
+    username = tr_config["username"]
+    password = tr_config["password"]
 
-    add_data = {"name": config["TestRail"]["name"],
-                "email": config["TestRail"]["email"],
-                "notifications": config["TestRail"]["notifications"],
-                "language": config["TestRail"]["language"],
-                "theme": config["TestRail"]["theme"],
-                "locale": config["TestRail"]["locale"],
-                "timezone": config["TestRail"]["timezone"],
-                "invite": config["TestRail"]["theme"], "password": config["TestRail"]["password"],
-                "confirm": config["TestRail"]["password"],
-                "role_id": config["TestRail"]["role_id"],
-                "is_active": config["TestRail"]["is_active"],
-                "js_test": config["TestRail"]["js_test"]}
-
-    auth_data = {"name": config["TestRail"]["username"], "password": config["TestRail"]["password"], "rememberme": "1"}
-
-    client = Client(main_url, auth_data=auth_data)
-    req = client.add_user(add_data=add_data)
-    if req == 200:
-        print("Adding was successful")
-    else:
-        print("Mistake in adding")
+    client = Client(main_url, username, password)
+    client.add_user("David Bowie","DB.official@nowhere.com")
