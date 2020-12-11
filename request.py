@@ -9,17 +9,18 @@ class Client:
     """
 
     def __init__(self, base_url: str, email: str, password: str):
-         """
+        """
         Initialize Client
         :param base_url: URL to TestRail
         :param email: TestRail user email for authentication
         :param password: TestRail user password for authentication
         :return: status code
-        """       
-        self.sess = requests.Session()
+        """  
+
         if not base_url.endswith('/'):
             base_url += '/'
         self.__url = base_url
+        self.sess = requests.Session()
         self.auth_data = {"name": username,
                           "password": password, "rememberme": "1"}
         self.__auth()
@@ -46,13 +47,37 @@ class Client:
             raise Exception("Error. Unable to reach TestRail: {}".format(
                 ping_response.status_code))
 
+    def get_users(self) -> dict:
+        """
+        Get list of currently present users
+        :return: dict with usernames and emails
+        """
+        get_users_url = self.__url + "admin/users/overview"
+        contents = self.sess.get(get_users_url).content
+        soup = BeautifulSoup(contents, 'lxml')
+        res = soup.find("div", {"id": 'usersTable'})
+        names = res.find_all("span", {"class": "name"})
+        emails = res.find_all("span", {"class": "email"})
+        users = dict()
+        for name, email in zip(names, emails):
+            users[name.get_text()] = email.get_text()
+        return users
+
     def add_user(self, username: str, email: str) -> int:
         """
         Add user to TestRail with username and email
         :param username: username
         :param email: email
-        :return: status code
+        :return: status code or None if failed to add user
         """
+        current_users = self.get_users()
+        if username in current_users.keys():
+            print("User with name {} already exists".format(username))
+            return None
+        elif email in current_users.values():
+            print("User with email {} already exists".format(email))
+            return None
+        
         add_url = self.__url + "admin/users/add"
         add_data = {"name": username, "email": email,
                     "confirm": self.auth_data["password"],
