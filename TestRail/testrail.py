@@ -7,9 +7,9 @@ import requests
 class APIClient:
     def __init__(self, base_url, user, password):
         self.user = user
-        print(self.user)
+        # print(self.user)
         self.password = password
-        print(password)
+        # print(password)
         if not base_url.endswith('/'):
             base_url += '/'
         self.__url = base_url + 'index.php?/api/v2/'
@@ -47,7 +47,7 @@ class APIClient:
             'ascii'
         ).strip()
         headers = {'Authorization': 'Basic ' + auth}
-        print(url)
+        # print(url)
         if method == 'POST':
             if uri[:14] == 'add_attachment':    # add_attachment API method
                 files = {'attachment': (open(data, 'rb'))}
@@ -60,7 +60,7 @@ class APIClient:
         else:
             headers['Content-Type'] = 'application/json'
             response = requests.get(url, headers=headers)
-            print(response.status_code)
+            # print(response.status_code)
         if response.status_code > 201:
             try:
                 error = response.json()
