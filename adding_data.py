@@ -26,7 +26,7 @@ class TRInteract:
         for case in cases:
             if case["id"] in mod_case_ids:
                 add_data = modify_cases_data[str(case["id"])]
-                case = self.modify_descriptions(case, add_data)
+                case = self.modify_description(case, add_data)
                 updated_cases.append(case)
         self.post_descriptions(updated_cases)
         return updated_cases
