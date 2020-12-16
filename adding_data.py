@@ -11,34 +11,21 @@ class TRIntercat:
         self.config.read("config.ini")
         self.client = APIClient(self.config["TestRail"]["url"], self.config["TestRail"]["username"],
                                 self.config["TestRail"]["password"])
+        self.info = ""
+        self.status_code = int
 
-    @staticmethod
-    def __update_and_post_descriptions(info, status_code):
+    def get_cases(self, project_id: int):
         """
+        The function receives data about all test cases in any project
+        :param project_id: id os the choosen project
+        """
+        req_url = 'get_cases/' + str(project_id)
+        self.info, self.status_code = self.client.send_get(req_url)
 
-        :param info: data from get_cases
-        :param status_code:
-        :return: satus_code or None
-        """
-        info, size = TRIntercat.change_description(info)
-        print(status_code)
-        if status_code == 200:
-            stat = TRIntercat().post_description(size, info)
-            print(stat)
-            return status_code
+        if self.status_code == 200:
+            print("Get info was successful")
         else:
-            return None
-
-    def get_cases(self, id: int):
-        """
-        The function receives data about all test cases
-        :param id: project id
-        :return: info - list of json data, status_code
-        """
-        req_url = 'get_cases/' + str(id)
-        print(req_url)
-        info, status_code = self.client.send_get(req_url)
-        TRIntercat.__update_and_post_descriptions(info, status_code)
+            raise Exception("Error in getting info about cases:" + str(self.status_code))
 
     @staticmethod
     def print_info(info: str) -> None:
@@ -51,8 +38,7 @@ class TRIntercat:
             for i in info:
                 json.dump(i, write_file, indent=4)
 
-    @staticmethod
-    def change_description(info: list) -> str:
+    def change_description(self) -> str:
         """
         Function changes or adds date in custom_preconds
         :param info: list of json
@@ -60,19 +46,16 @@ class TRIntercat:
         """
         now = datetime.datetime.now()
         date = " " + str(now.day) + "/" + str(now.month) + "/" + str(now.year)
-
-        for i in info:
-            preconds = i["custom_preconds"]
+        for test_case in self.info:
+            preconds = test_case["custom_preconds"]
             match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', preconds)
             if not match:
-                i["custom_preconds"] += date
+                test_case["custom_preconds"] += date
             else:
-                i["custom_preconds"] = i["custom_preconds"].replace(match.group(), "")
-                i["custom_preconds"] += date
+                test_case["custom_preconds"] = test_case["custom_preconds"].replace(match.group(), "")
+                test_case["custom_preconds"] += date
 
-        return info, len(info)
-
-    def post_description(self, num_id: int, data: list) -> int:
+    def post_description(self) -> int:
         """
         Sending modified data to the server
         :param num_id: number of test cases' id
@@ -82,15 +65,16 @@ class TRIntercat:
         req_url = 'update_case/'
         status_code = list()
 
-        for id in range(0, num_id):
-            req_url += str(id+1)
-            status_code.append(self.client.send_post(uri=req_url, data=data[id]))
-            req_url = req_url[0:-1]
-        return status_code
+        for case in self.info:
+            status_code.append(self.client.send_post(uri=req_url + str(case["id"]), data=case))
+
+        if not all(status_code):
+            raise Exception("Warning, error updating descriptions")
+        else:
+            print("Post was successful")
 
     def check_date(self, url: str, num_id: int) -> dict:
         """
-
         :param url: link for GET request about every test cases
         :param num_id: number of id
         :return: list of bool
@@ -109,4 +93,6 @@ class TRIntercat:
 
 if __name__ == "__main__":
     attempt = TRIntercat()
-    attempt.get_cases(id=1)
+    attempt.get_cases(project_id=1)
+    attempt.change_description()
+    attempt.post_description()
