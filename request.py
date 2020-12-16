@@ -17,21 +17,25 @@ class Client:
         self.sess = requests.Session()
         self.auth_data = auth_data
         self.token = ""
+        self.__auth()
 
+    def __auth(self):
+        """
+        Authentication and token acquisition
+        """
         if self.sess.get(self.__auth_url).status_code == 200:
             if self.sess.post(self.__auth_url, self.auth_data).status_code == 200:
-                
+
                 contents = self.sess.get(self.__url + "dashboard").content
                 soup = BeautifulSoup(contents, 'lxml')
                 self.token = soup.find('input', {'name': '_token'}).get('value')
-                
                 print("Auth was successful")
             else:
+                raise Exception("Error in auth: " + str(self.sess.post(self.__auth_url, self.auth_data).status_code))
                 print("Error: " + str(self.sess.post(self.__auth_url, self.auth_data).status_code))
-                return None
+
         else:
-            print("Error: " + str(self.sess.get(self.__auth_url).status_code))
-            return None
+            raise Exception("Access error: " + str(self.sess.get(self.__auth_url).status_code))
 
     def add_user(self, add_data: dict) -> int:
         """
@@ -40,10 +44,9 @@ class Client:
         :return: status code
         """
         add_data['_token'] = self.token
-        print(self.__add_url)
-        print(add_data)
         response = self.sess.post(self.__add_url, add_data)
-        return response.content
+        return response.status_code
+
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
