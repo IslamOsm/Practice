@@ -57,10 +57,10 @@ class TRIntercat:
 
     def post_description(self) -> int:
         """
-        Sending modified data to the server
+        Sending test descriptions to the server
         :param num_id: number of test cases' id
-        :param data: modified data
-        :return: status_code
+        :param data: list of test cases with descriptions to send
+        :return: list of status codes for each operation
         """
         req_url = 'update_case/'
         status_code = list()
