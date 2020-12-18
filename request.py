@@ -45,6 +45,11 @@ class Client:
         """
         add_data['_token'] = self.token
         response = self.sess.post(self.__add_url, add_data)
+        if response.status_code == 200:
+            print("Adding was successful)
+        else:
+            raise Exception("Adding error: " + str(response.status_code))
+        
         return response.status_code
 
 
@@ -70,8 +75,5 @@ if __name__ == "__main__":
     auth_data = {"name": config["TestRail"]["username"], "password": config["TestRail"]["password"], "rememberme": "1"}
 
     client = Client(main_url, auth_data=auth_data)
-    req = client.add_user(add_data=add_data)
-    if req == 200:
-        print("Adding was successful")
-    else:
-        print("Mistake in adding")
+    client.add_user(add_data=add_data)
+    
