@@ -5,7 +5,8 @@ import re
 import datetime
 
 
-class TRIntercat:
+class TRInteract:
+
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read("config.ini")
@@ -17,7 +18,7 @@ class TRIntercat:
     def get_cases(self, project_id: int):
         """
         The function receives data about all test cases in any project
-        :param project_id: id os the choosen project
+        :param project_id: id of the chosen project
         """
         req_url = 'get_cases/' + str(project_id)
         self.info, self.status_code = self.client.send_get(req_url)
@@ -32,7 +33,6 @@ class TRIntercat:
         """
         Recording list of json in info.json for reading
         :param info: list of json data
-        :return:
         """
         with open("info.json", "a") as write_file:
             for i in info:
@@ -40,12 +40,10 @@ class TRIntercat:
 
     def change_description(self) -> str:
         """
-        Function changes or adds date in custom_preconds
-        :param info: list of json
-        :return: info - modified data, len(info) - size of new data
+        Method changes or adds date in custom_preconds
+        :param info: list of json with information about test cases
         """
-        now = datetime.datetime.now()
-        date = " " + str(now.day) + "/" + str(now.month) + "/" + str(now.year)
+        date = datetime.datetime.now().strftime("%d/%m/%Y")
         for test_case in self.info:
             preconds = test_case["custom_preconds"]
             match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', preconds)
@@ -55,12 +53,10 @@ class TRIntercat:
                 test_case["custom_preconds"] = test_case["custom_preconds"].replace(match.group(), "")
                 test_case["custom_preconds"] += date
 
-    def post_description(self) -> int:
+    def post_description(self) -> None:
         """
-        Sending test descriptions to the server
-        :param num_id: number of test cases' id
-        :param data: list of test cases with descriptions to send
-        :return: list of status codes for each operation
+        Sending modified data to the server
+        :return: status_code
         """
         req_url = 'update_case/'
         status_code = list()
@@ -71,19 +67,20 @@ class TRIntercat:
         if not all(status_code):
             raise Exception("Warning, error updating descriptions")
         else:
-            print("Post was successful")
+            print("Post of descriptions was successful")
 
-    def check_date(self, url: str, num_id: int) -> dict:
+        return status_code
+
+    def check_date(self) -> dict:
         """
-        :param url: link for GET request about every test cases
-        :param num_id: number of id
-        :return: list of bool
+        The method checks for a date in description of test cases
+        :return: If the data retrieval request was successful, it returns a list of items. In this case,
+        True - if there is a date, False-if there isn't date
         """
-        info, status_code = self.client.send_get(url + str(num_id))
         date = list()
-        if status_code == 200:
-            for i in info:
-                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}', i["custom_preconds"]):
+        if self.status_code == 200:
+            for test_case in self.info:
+                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}', test_case["custom_preconds"]):
                     date.append(False)
                 else:
                     date.append(True)
@@ -92,7 +89,8 @@ class TRIntercat:
 
 
 if __name__ == "__main__":
-    attempt = TRIntercat()
+    attempt = TRInteract()
     attempt.get_cases(project_id=1)
     attempt.change_description()
-    attempt.post_description()
+    if attempt.check_date() is not []:
+        attempt.post_description()
