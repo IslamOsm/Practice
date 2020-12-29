@@ -5,7 +5,8 @@ import configparser
 
 class Client:
     """
-    Class Client is used for authentication in TestRail and for adding and receiving information from this site
+    Class Client is used for authentication in TestRail and for adding and
+    receiving information from this site
     """
 
     def __init__(self, base_url: str, user, password, rememberme=1):
@@ -16,7 +17,9 @@ class Client:
         self.__auth_url = self.__url + "auth/login"
         self.__add_url = self.__url + "admin/users/add"
         self.sess = requests.Session()
-        self.auth_data = {"name": user, "password": password, "rememberme": rememberme}
+        self.auth_data = {"name": user,
+                          "password": password,
+                          "rememberme": rememberme}
         self.token = ""
         self.status_code = ""
         self.__auth()
@@ -26,13 +29,15 @@ class Client:
         Authentication and token acquisition
         """
         if self.sess.get(self.__auth_url).status_code == 200:
-            if self.sess.post(self.__auth_url, self.auth_data).status_code == 200:
+            if self.sess.post(self.__auth_url,
+                              self.auth_data).status_code == 200:
 
                 contents = self.sess.get(self.__url + "dashboard").content
                 soup = BeautifulSoup(contents, 'lxml')
 
                 try:
-                    self.token = soup.find('input', {'name': '_token'}).get('value')
+                    self.token = soup.find('input',
+                                           {'name': '_token'}).get('value')
                 except AttributeError:
                     self.token = None
                     return
@@ -40,10 +45,14 @@ class Client:
                 self.status_code = 200
                 print("Auth was successful: " + str(self.status_code))
             else:
-                raise Exception("Error in auth: " + str(self.sess.post(self.__auth_url, self.auth_data).status_code))
+                raise Exception("Error in auth: " +
+                                str(self.sess.post(self.__auth_url,
+                                                   self.auth_data)
+                                    .status_code))
 
         else:
-            raise Exception("Access error: " + str(self.sess.get(self.__auth_url).status_code))
+            raise Exception("Access error: " +
+                            str(self.sess.get(self.__auth_url).status_code))
 
     def add_user(self, add_data: dict) -> int:
         """
@@ -56,7 +65,7 @@ class Client:
             response = self.sess.post(self.__add_url, add_data)
             return response.status_code
         else:
-            return 403
+            return 401
 
 
 if __name__ == "__main__":
@@ -79,7 +88,8 @@ if __name__ == "__main__":
                 "is_active": config["TestRail"]["is_active"],
                 "js_test": config["TestRail"]["js_test"]}
 
-    client = Client(main_url, config["TestRail"]["username"], config["TestRail"]["password"])
+    client = Client(main_url, config["TestRail"]["username"],
+                    config["TestRail"]["password"])
     response_status = client.add_user(add_data=add_data)
     if response_status == 200:
         print("Adding user was successful")
