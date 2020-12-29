@@ -16,7 +16,7 @@ class TRInteract:
         self.info = ""
         self.status_code = int
 
-    def get_cases(self, project_id: int):
+    def get_cases(self, project_id: int) -> None:
         """
         The function receives data about all test cases in any project
         :param project_id: id of the chosen project
@@ -40,7 +40,7 @@ class TRInteract:
             for i in info:
                 json.dump(i, write_file, indent=4)
 
-    def change_description(self) -> str:
+    def change_description(self) -> None:
         """
         Method changes or adds date in custom_preconds
         :param info: list of json with information about test cases
@@ -56,7 +56,7 @@ class TRInteract:
                     replace(match.group(), "")
                 test_case["custom_preconds"] += date
 
-    def post_description(self) -> None:
+    def post_description(self) -> int:
         """
         Sending modified data to the server
         :return: status_code
@@ -75,7 +75,7 @@ class TRInteract:
 
         return status_code
 
-    def check_date(self) -> dict:
+    def check_date(self) -> list:
         """
         The method checks for a date in description of test cases
         :return:
