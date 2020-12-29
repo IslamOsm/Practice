@@ -56,7 +56,7 @@ class Client:
             response = self.sess.post(self.__add_url, add_data)
             return response.status_code
         else:
-            return 404
+            return 403
 
 
 if __name__ == "__main__":
@@ -72,7 +72,8 @@ if __name__ == "__main__":
                 "theme": config["TestRail"]["theme"],
                 "locale": config["TestRail"]["locale"],
                 "timezone": config["TestRail"]["timezone"],
-                "invite": config["TestRail"]["theme"], "password": config["TestRail"]["password"],
+                "invite": config["TestRail"]["invite"],
+                "password": config["TestRail"]["password"],
                 "confirm": config["TestRail"]["password"],
                 "role_id": config["TestRail"]["role_id"],
                 "is_active": config["TestRail"]["is_active"],
@@ -80,8 +81,7 @@ if __name__ == "__main__":
 
     client = Client(main_url, config["TestRail"]["username"], config["TestRail"]["password"])
     response_status = client.add_user(add_data=add_data)
-    print(response_status)
     if response_status == 200:
         print("Adding user was successful")
     else:
-        print("Adding user was not successful")
+        print("Authorization error")

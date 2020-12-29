@@ -30,7 +30,8 @@ class TestRequest:
                 "theme": config["TestRail"]["theme"],
                 "locale": config["TestRail"]["locale"],
                 "timezone": config["TestRail"]["timezone"],
-                "invite": config["TestRail"]["theme"], "password": config["TestRail"]["password"],
+                "invite": config["TestRail"]["invite"],
+                "password": config["TestRail"]["password"],
                 "confirm": config["TestRail"]["password"],
                 "role_id": config["TestRail"]["role_id"],
                 "is_active": config["TestRail"]["is_active"],
@@ -45,7 +46,7 @@ class TestRequest:
 
     def test_auth_with_incorrect_data(self):
         """
-        he test case checks the response of the Client class method when the auth data is entered incorrectly
+        The test case checks the response of the Client class method when the auth data is entered incorrectly
         """
         username = "Brad"
         client = Client(self.main_url, username, self.config["TestRail"]["password"])
@@ -68,6 +69,16 @@ class TestRequest:
         client.add_user(add_data=self.add_data)
         info, status_code = self.API_client.send_get(self.req_url)
         assert find_by_key(info, "email", '1234') is False
+
+    def test_add_user_with_empty_data(self):
+        """
+        The test case checks the add_user method with some empty element in data
+        """
+        client = Client(self.main_url, self.config["TestRail"]["username"], self.config["TestRail"]["password"])
+        del self.add_data['email']
+        client.add_user(add_data=self.add_data)
+        info, status_code = self.API_client.send_get(self.req_url)
+        assert find_by_key(info, "email", '') is False
 
     def test_added_user_in_test_rail(self):
         """
