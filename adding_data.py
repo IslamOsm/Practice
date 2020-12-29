@@ -10,7 +10,8 @@ class TRInteract:
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read("config.ini")
-        self.client = APIClient(self.config["TestRail"]["url"], self.config["TestRail"]["username"],
+        self.client = APIClient(self.config["TestRail"]["url"],
+                                self.config["TestRail"]["username"],
                                 self.config["TestRail"]["password"])
         self.info = ""
         self.status_code = int
@@ -26,7 +27,8 @@ class TRInteract:
         if self.status_code == 200:
             print("Get info was successful")
         else:
-            raise Exception("Error in getting info about cases:" + str(self.status_code))
+            raise Exception("Error in getting info about cases:"
+                            + str(self.status_code))
 
     @staticmethod
     def print_info(info: str) -> None:
@@ -50,7 +52,8 @@ class TRInteract:
             if not match:
                 test_case["custom_preconds"] += date
             else:
-                test_case["custom_preconds"] = test_case["custom_preconds"].replace(match.group(), "")
+                test_case["custom_preconds"] = test_case["custom_preconds"].\
+                    replace(match.group(), "")
                 test_case["custom_preconds"] += date
 
     def post_description(self) -> None:
@@ -62,7 +65,8 @@ class TRInteract:
         status_code = list()
 
         for case in self.info:
-            status_code.append(self.client.send_post(uri=req_url + str(case["id"]), data=case))
+            status_code.append(self.client.send_post
+                               (uri=req_url + str(case["id"]), data=case))
 
         if not all(status_code):
             raise Exception("Warning, error updating descriptions")
@@ -75,13 +79,15 @@ class TRInteract:
         """
         The method checks for a date in description of test cases
         :return:
-        If the data retrieval request was successful, it returns a list of items. In this case,
+        If the data retrieval request was successful,
+        it returns a list of items. In this case,
         True - if there is a date, False - if there is no date
         """
         date = list()
         if self.status_code == 200:
             for test_case in self.info:
-                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}', test_case["custom_preconds"]):
+                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}',
+                                 test_case["custom_preconds"]):
                     date.append(False)
                 else:
                     date.append(True)
