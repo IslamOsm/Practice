@@ -74,8 +74,9 @@ class TRInteract:
     def check_date(self) -> dict:
         """
         The method checks for a date in description of test cases
-        :return: If the data retrieval request was successful, it returns a list of items. In this case,
-        True - if there is a date, False-if there isn't date
+        :return:
+        If the data retrieval request was successful, it returns a list of items. In this case,
+        True - if there is a date, False - if there is no date
         """
         date = list()
         if self.status_code == 200:

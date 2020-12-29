@@ -43,8 +43,3 @@ class TestTRInteract:
         self.tr_request.change_description()
         dates = self.tr_request.check_date()
         assert False not in dates
-
-
-
-
-
