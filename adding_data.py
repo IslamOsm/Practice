@@ -56,10 +56,10 @@ class TRInteract:
                     replace(match.group(), "")
                 test_case["custom_preconds"] += date
 
-    def post_description(self) -> int:
+    def post_description(self) -> list:
         """
         Sending modified data to the server
-        :return: status_code
+        :return: list of status_codes returned for cases descriptions update
         """
         req_url = 'update_case/'
         status_code = list()
