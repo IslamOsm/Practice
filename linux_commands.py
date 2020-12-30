@@ -54,9 +54,9 @@ class LinuxCommands:
 
             info = info.stdout.decode().split('\n')[0]
             if 'Access Point' in info:
-                ap_info[iface_name] = "AP"
+                ap_info[iface_name] = "Available"
             else:
-                ap_info[iface_name] = "NO AP"
+                ap_info[iface_name] = "Not Available"
 
         return ap_info
 
@@ -77,6 +77,5 @@ if __name__ == "__main__":
         if iface in netmasks:
             print("NETMASK: " + str(netmasks[iface]))
         if iface in ap:
-            print(str(ap[iface]))
+            print("Access point: " + str(ap[iface]))
         print("--------------------")
-
