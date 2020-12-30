@@ -2,7 +2,8 @@ import pytest
 from request import Client
 import configparser
 from TestRail import APIClient
-import datetime
+import datetime as DT
+import time
 
 def config_data():
     config = configparser.ConfigParser()
@@ -37,6 +38,7 @@ class TestRequest:
                 "role_id": config["TestRail"]["role_id"],
                 "is_active": config["TestRail"]["is_active"],
                 "js_test": config["TestRail"]["js_test"]}
+    now = int(time.time())
 
     def test_auth_with_correct_data(self):
         """
@@ -62,13 +64,12 @@ class TestRequest:
         """
         Checking the add_user method
         """
-        date = datetime.datetime.now().strftime("%d/%m/%Y")
         client = Client(self.main_url,
                         self.config["TestRail"]["username"],
                         self.config["TestRail"]["password"])
-        buf_data = self.add_data
-        buf_data['name'] = "Test" + str(date)
-        buf_data['email'] = "Test" + str(date) + "@gmail.com"
+        buf_data = dict(self.add_data)
+        buf_data['name'] = "Test1" + str(self.now)
+        buf_data['email'] = "Test1" + str(self.now) + "@gmail.com"
         response_status = client.add_user(add_data=buf_data)
         assert response_status == 200
 
@@ -79,7 +80,7 @@ class TestRequest:
         client = Client(self.main_url,
                         self.config["TestRail"]["username"],
                         self.config["TestRail"]["password"])
-        buf_data = self.add_data
+        buf_data = dict(self.add_data)
         buf_data["email"] = '1234'
         client.add_user(add_data=buf_data)
         info, status_code = self.API_client.send_get(self.req_url)
@@ -93,11 +94,12 @@ class TestRequest:
         client = Client(self.main_url,
                         self.config["TestRail"]["username"],
                         self.config["TestRail"]["password"])
-        buf_data = self.add_data
+        buf_data = dict(self.add_data)
         del buf_data['email']
+        buf_data['name'] = "Test" + str(self.now + 5)
         client.add_user(add_data=self.add_data)
         info, status_code = self.API_client.send_get(self.req_url)
-        assert find_by_key(info, "email", '') is False
+        assert find_by_key(info, 'name', buf_data['name']) is False
 
     def test_added_user_in_test_rail(self):
         """
@@ -107,7 +109,10 @@ class TestRequest:
         client = Client(self.main_url,
                         self.config["TestRail"]["username"],
                         self.config["TestRail"]["password"])
-        client.add_user(add_data=self.add_data)
+        buf_data = dict(self.add_data)
+        buf_data['name'] = "Test2" + str(self.now)
+        buf_data['email'] = "Test2" + str(self.now) + "@gmail.com"
+        client.add_user(add_data=buf_data)
         info, status_code = self.API_client.send_get(self.req_url)
         assert find_by_key(info, "email",
-                           self.config["TestRail"]["email"]) is True
+                           buf_data['email']) is True
