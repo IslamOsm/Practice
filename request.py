@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import configparser
-
+import time
 
 class Client:
     """
@@ -20,7 +20,7 @@ class Client:
         self.auth_data = {"name": user,
                           "password": password,
                           "rememberme": rememberme}
-        self.token = ""
+        self.token = None
         self.status_code = ""
         self.__auth()
 
@@ -28,31 +28,27 @@ class Client:
         """
         Authentication and token acquisition
         """
-        if self.sess.get(self.__auth_url).status_code == 200:
-            if self.sess.post(self.__auth_url,
-                              self.auth_data).status_code == 200:
-
+        self.status_code = self.sess.get(self.__auth_url).status_code
+        if self.status_code == 200:
+            self.status_code = self.sess.post(self.__auth_url,
+                               self.auth_data).status_code
+            if self.status_code == 200:
                 contents = self.sess.get(self.__url + "dashboard").content
                 soup = BeautifulSoup(contents, 'lxml')
-
                 try:
                     self.token = soup.find('input',
                                            {'name': '_token'}).get('value')
                 except AttributeError:
-                    self.token = None
+                    print("Failed to get token")
                     return
-
-                self.status_code = 200
                 print("Auth was successful: " + str(self.status_code))
             else:
                 raise Exception("Error in auth: " +
-                                str(self.sess.post(self.__auth_url,
-                                                   self.auth_data)
-                                    .status_code))
+                                str(self.status_code))
 
         else:
             raise Exception("Access error: " +
-                            str(self.sess.get(self.__auth_url).status_code))
+                            str(self.status_code))
 
     def add_user(self, add_data: dict) -> int:
         """
@@ -91,6 +87,7 @@ if __name__ == "__main__":
     client = Client(main_url, config["TestRail"]["username"],
                     config["TestRail"]["password"])
     response_status = client.add_user(add_data=add_data)
+    now = time.time()
     if response_status == 200:
         print("Adding user was successful")
     else:

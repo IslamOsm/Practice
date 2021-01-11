@@ -2,7 +2,6 @@ import pytest
 from request import Client
 import configparser
 from TestRail import APIClient
-import datetime as DT
 import time
 
 def config_data():
