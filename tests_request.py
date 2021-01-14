@@ -39,14 +39,16 @@ class TestRequest:
                 "js_test": config["TestRail"]["js_test"]}
     now = int(time.time())
 
+    client = Client(main_url,
+                    config["TestRail"]["username"],
+                    config["TestRail"]["password"])
+
     def test_auth_with_correct_data(self):
         """
         The test case checks the response of the Client class method
         when the auth data is entered correctly
         """
-        client = Client(self.main_url,
-                        self.config["TestRail"]["username"],
-                        self.config["TestRail"]["password"])
+        client = self.client
         assert client.status_code == 200
 
     def test_auth_with_incorrect_data(self):
@@ -63,9 +65,7 @@ class TestRequest:
         """
         Checking the add_user method
         """
-        client = Client(self.main_url,
-                        self.config["TestRail"]["username"],
-                        self.config["TestRail"]["password"])
+        client = self.client
         buf_data = dict(self.add_data)
         buf_data['name'] = "Test1" + str(self.now)
         buf_data['email'] = "Test1" + str(self.now) + "@gmail.com"
@@ -76,9 +76,7 @@ class TestRequest:
         """
         Checking the add_user method for incorrectly entered data
         """
-        client = Client(self.main_url,
-                        self.config["TestRail"]["username"],
-                        self.config["TestRail"]["password"])
+        client = self.client
         buf_data = dict(self.add_data)
         buf_data["email"] = '1234'
         client.add_user(add_data=buf_data)
@@ -90,9 +88,7 @@ class TestRequest:
         The test case checks the add_user method
         with some empty element in data
         """
-        client = Client(self.main_url,
-                        self.config["TestRail"]["username"],
-                        self.config["TestRail"]["password"])
+        client = self.client
         buf_data = dict(self.add_data)
         del buf_data['email']
         buf_data['name'] = "Test" + str(self.now + 5)
@@ -105,9 +101,7 @@ class TestRequest:
         The test case checks
         if a new user appears after executing the add_user method
         """
-        client = Client(self.main_url,
-                        self.config["TestRail"]["username"],
-                        self.config["TestRail"]["password"])
+        client = self.client
         buf_data = dict(self.add_data)
         buf_data['name'] = "Test2" + str(self.now)
         buf_data['email'] = "Test2" + str(self.now) + "@gmail.com"

@@ -38,8 +38,8 @@ class Client:
                 try:
                     self.token = soup.find('input',
                                            {'name': '_token'}).get('value')
-                except AttributeError:
-                    print("Failed to get token")
+                except AttributeError as e:
+                    print("Failed to get token:\n" + str(e))
                     return
                 print("Auth was successful: " + str(self.status_code))
             else:
@@ -87,7 +87,6 @@ if __name__ == "__main__":
     client = Client(main_url, config["TestRail"]["username"],
                     config["TestRail"]["password"])
     response_status = client.add_user(add_data=add_data)
-    now = time.time()
     if response_status == 200:
         print("Adding user was successful")
     else:
