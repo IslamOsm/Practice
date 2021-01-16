@@ -59,7 +59,7 @@ class TestRequest:
         username = "Brad"
         client = Client(self.main_url, username,
                         self.config["TestRail"]["password"])
-        assert client.status_code != 200
+        assert client != 200
 
     def test_add_user_with_correct_data(self):
         """

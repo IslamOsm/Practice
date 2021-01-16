@@ -40,7 +40,7 @@ class Client:
                                            {'name': '_token'}).get('value')
                 except AttributeError as e:
                     print("Failed to get token:\n" + str(e))
-                    return
+                    return 401
                 print("Auth was successful: " + str(self.status_code))
             else:
                 raise Exception("Error in auth: " +
