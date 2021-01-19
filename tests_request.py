@@ -70,10 +70,9 @@ class TestRequest:
         """
         Checking the add_user method for incorrectly entered data
         """
-        client = self.client
         buf_data = dict(self.add_data)
         buf_data["email"] = '1234'
-        client.add_user(add_data=buf_data)
+        self.client.add_user(add_data=buf_data)
         info, status_code = self.API_client.send_get(self.req_url)
         assert find_by_key(info, "email", buf_data["email"]) is False
 
@@ -82,11 +81,10 @@ class TestRequest:
         The test case checks the add_user method
         with some empty element in data
         """
-        client = self.client
         buf_data = dict(self.add_data)
         del buf_data['email']
         buf_data['name'] = "Test" + str(self.now + 5)
-        client.add_user(add_data=self.add_data)
+        self.client.add_user(add_data=self.add_data)
         info, status_code = self.API_client.send_get(self.req_url)
         assert find_by_key(info, 'name', buf_data['name']) is False
 
@@ -95,11 +93,10 @@ class TestRequest:
         The test case checks
         if a new user appears after executing the add_user method
         """
-        client = self.client
         buf_data = dict(self.add_data)
         buf_data['name'] = "Test2" + str(self.now)
         buf_data['email'] = "Test2" + str(self.now) + "@gmail.com"
-        res_status = client.add_user(add_data=buf_data)
+        res_status = self.client.add_user(add_data=buf_data)
         info, status_code = self.API_client.send_get(self.req_url)
         assert find_by_key(info, "email",
                            buf_data['email']) is True and res_status == 200
