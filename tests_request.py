@@ -4,6 +4,7 @@ import configparser
 from TestRail import APIClient
 import time
 
+
 def config_data():
     config = configparser.ConfigParser()
     config.read("config.ini")
@@ -48,8 +49,10 @@ class TestRequest:
         The test case checks the response of the Client class method
         when the auth data is entered correctly
         """
-        client = self.client
-        assert client.status_code == 200
+        client = Client(self.main_url,
+                        self.config["TestRail"]["username"],
+                        self.config["TestRail"]["password"])
+        assert client.token is not None
 
     def test_auth_with_incorrect_data(self):
         """
@@ -59,18 +62,9 @@ class TestRequest:
         username = "Brad"
         client = Client(self.main_url, username,
                         self.config["TestRail"]["password"])
-        assert client != 200
 
-    def test_add_user_with_correct_data(self):
-        """
-        Checking the add_user method
-        """
-        client = self.client
-        buf_data = dict(self.add_data)
-        buf_data['name'] = "Test1" + str(self.now)
-        buf_data['email'] = "Test1" + str(self.now) + "@gmail.com"
-        response_status = client.add_user(add_data=buf_data)
-        assert response_status == 200
+        response_status = client.add_user(add_data=self.add_data)
+        assert response_status != 200
 
     def test_add_user_with_incorrect_data(self):
         """
@@ -105,7 +99,7 @@ class TestRequest:
         buf_data = dict(self.add_data)
         buf_data['name'] = "Test2" + str(self.now)
         buf_data['email'] = "Test2" + str(self.now) + "@gmail.com"
-        client.add_user(add_data=buf_data)
+        res_status = client.add_user(add_data=buf_data)
         info, status_code = self.API_client.send_get(self.req_url)
         assert find_by_key(info, "email",
-                           buf_data['email']) is True
+                           buf_data['email']) is True and res_status == 200
