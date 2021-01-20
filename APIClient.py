@@ -13,6 +13,12 @@ class APIClient:
         if not base_url.endswith('/'):
             base_url += '/'
         self.__url = base_url + 'index.php?/api/v2/'
+    
+    def api_get_users(self):
+        return self.send_get("get_users")
+    
+    def api_get_cases(self, project_id=1):
+        return self.send_get("get_cases/{}".format(project_id))
 
     def send_get(self, uri, filepath=None):
         """Issue a GET request (read) against the API.

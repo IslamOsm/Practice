@@ -8,6 +8,8 @@ import datetime
 class TRInteract:
 
     def __init__(self):
+        print("Running inti")
+
         self.config = configparser.ConfigParser()
         self.config.read("config.ini")
         self.client = APIClient(self.config["TestRail"]["url"],
@@ -45,16 +47,19 @@ class TRInteract:
         Method changes or adds date in custom_preconds
         :param info: list of json with information about test cases
         """
-        date = datetime.datetime.now().strftime("%d/%m/%Y")
+        date = datetime.datetime.now()
+        date = date.strftime("%d/%m/%Y %H:%M:%S")
+        print(date)
         for test_case in self.info:
             preconds = test_case["custom_preconds"]
-            match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', preconds)
+            match = re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}', preconds)
             if not match:
                 test_case["custom_preconds"] += date
             else:
                 test_case["custom_preconds"] = test_case["custom_preconds"].\
                     replace(match.group(), "")
                 test_case["custom_preconds"] += date
+        return date
 
     def post_description(self) -> list:
         """
@@ -86,7 +91,7 @@ class TRInteract:
         date = list()
         if self.status_code == 200:
             for test_case in self.info:
-                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}',
+                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}',
                                  test_case["custom_preconds"]):
                     date.append(False)
                 else:
@@ -96,6 +101,7 @@ class TRInteract:
 
 
 if __name__ == "__main__":
+    print("Running main")
     attempt = TRInteract()
     attempt.get_cases(project_id=1)
     attempt.change_description()
