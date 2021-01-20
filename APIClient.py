@@ -1,10 +1,10 @@
 import base64
 import json
-
 import requests
 
 
 class APIClient:
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
     def __init__(self, base_url, user, password):
         self.user = user
         print(self.user)

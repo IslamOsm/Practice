@@ -1,4 +1,4 @@
-from TestRail import APIClient
+from APIClient import APIClient
 import configparser
 import json
 import re

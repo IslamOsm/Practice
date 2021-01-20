@@ -1,7 +1,7 @@
 *** Settings ***
-Library           APIClient.APIClient    https://islamosm.testrail.io/    gch47858@cuoly.com    tSlFeh0QWe1bM8WfJsXU
+Library           APIClient.py    https://islamosm.testrail.io/    gch47858@cuoly.com    tSlFeh0QWe1bM8WfJsXU
 Library           DateTime
-Library           TRInteract.TRInteract
+Library           TRInteract.py
 Library           Process
 *** Variables ***
 ${REQ_URL_USERS}    get_users
@@ -25,6 +25,8 @@ Test added_data
     Run Process    python    TRInteract.py
     ${RESPONSE_CASES}=    Send Get    ${REQ_URL_CASES}
     ${RESPONSE_CASES_TEXT}=     Convert To String    ${RESPONSE_CASES[0]}
+    # Малоинформативный тест - за один день можно
+    # прогонять много тестов - лучше epoch проверять
     ${CUR_TIME}=    Get Current Date    result_format=%d/%m/%Y
     ${CUR_TIME_TEXT}=    Convert To String    ${CUR_TIME}
 
@@ -33,7 +35,7 @@ Test added_data
 Get cases status code
     [Documentation]    The test case check correctness of method's status code
     Get Cases    1
-    ${lib}=    Get Library Instance    TRInteract.TRInteract
+    ${lib}=    Get Library Instance    TRInteract
     Should Be Equal As Integers    ${lib.status_code}    200
 
 Get cases with wrong data
