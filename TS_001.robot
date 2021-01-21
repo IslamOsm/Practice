@@ -19,25 +19,24 @@ Run wrong cases
 #     Should Contain    ${users_text}    Islam Osmanov
 #     Should Contain    ${users_text}    gch47858@cuoly.com
 
+# Test Adding Data
+#     [Documentation]    Check process of adding date
+#     Get Cases    project_id=1
+#     ${timestamp}    Change Description
+#     ${check_date}    Check Date
+#     Run Keyword If    ${check_date} != @{EMPTY}    Post Description
 
-Test Adding Data
-    [Documentation]    Check process of adding date
-    Get Cases    project_id=1
-    ${timestamp}    Change Description
-    ${check_date}    Check Date
-    Run Keyword If    ${check_date} != @{EMPTY}    Post Description
-
-    ${cases}    API Get Cases    project_id=1
+#     ${cases}    API Get Cases    project_id=1
     
-    FOR  ${case}  IN  ${cases}
-        ${case_text}    Convert To String    ${case}
-        Should Contain    ${case_text}    ${timestamp}
-    END
+#     FOR  ${case}  IN  ${cases}
+#         ${case_text}    Convert To String    ${case}
+#         Should Contain    ${case_text}    ${timestamp}
+#     END
 
 Get cases status code
     [Documentation]    The test case check correctness of method's status code
     Get Cases    1
-    ${lib}=    Get Library Instance    TRInteract
+    ${lib}    Get Library Instance    TRInteract
     Should Be Equal As Integers    ${lib.status_code}    200
 
 Get cases with wrong data
