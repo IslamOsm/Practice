@@ -12,26 +12,26 @@ Run wrong cases
     ${RESPONSE}=    Get Cases    234
 
 *** Test Cases ***
-# Test added user
-#     [Documentation]       Check ability to get users from TestRail
-#     ${users}    API Get Users
-#     ${users_text}    Convert To String    ${users[0]}
-#     Should Contain    ${users_text}    Islam Osmanov
-#     Should Contain    ${users_text}    gch47858@cuoly.com
+Test added user
+    [Documentation]       Check ability to get users from TestRail
+    ${users}    API Get Users
+    ${users_text}    Convert To String    ${users[0]}
+    Should Contain    ${users_text}    Islam Osmanov
+    Should Contain    ${users_text}    gch47858@cuoly.com
 
-# Test Adding Data
-#     [Documentation]    Check process of adding date
-#     Get Cases    project_id=1
-#     ${timestamp}    Change Description
-#     ${check_date}    Check Date
-#     Run Keyword If    ${check_date} != @{EMPTY}    Post Description
+Test Adding Data
+    [Documentation]    Check process of adding date
+    Get Cases    project_id=1
+    ${timestamp}    Change Description
+    ${check_date}    Check Date
+    Run Keyword If    ${check_date} != @{EMPTY}    Post Description
 
-#     ${cases}    API Get Cases    project_id=1
+    ${cases}    API Get Cases    project_id=1
     
-#     FOR  ${case}  IN  ${cases}
-#         ${case_text}    Convert To String    ${case}
-#         Should Contain    ${case_text}    ${timestamp}
-#     END
+    FOR  ${case}  IN  ${cases}
+        ${case_text}    Convert To String    ${case}
+        Should Contain    ${case_text}    ${timestamp}
+    END
 
 Get cases status code
     [Documentation]    The test case check correctness of method's status code
