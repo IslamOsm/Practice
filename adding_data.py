@@ -23,9 +23,9 @@ class TRInteract:
         """
         req_url = 'get_cases/' + str(project_id)
         self.info, self.status_code = self.client.send_get(req_url)
-
         if self.status_code == 200:
             print("Get info was successful")
+            return self.info
         else:
             raise Exception("Error in getting info about cases:"
                             + str(self.status_code))
@@ -40,21 +40,20 @@ class TRInteract:
             for i in info:
                 json.dump(i, write_file, indent=4)
 
-    def change_description(self) -> None:
+    def change_description(self, data) -> None:
         """
         Method changes or adds date in custom_preconds
         :param info: list of json with information about test cases
         """
-        date = datetime.datetime.now().strftime("%d/%m/%Y")
         for test_case in self.info:
             preconds = test_case["custom_preconds"]
-            match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', preconds)
+            match = re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}', preconds)
             if not match:
-                test_case["custom_preconds"] += date
+                test_case["custom_preconds"] += data
             else:
                 test_case["custom_preconds"] = test_case["custom_preconds"].\
-                    replace(match.group(), "")
-                test_case["custom_preconds"] += date
+                    replace(match.group(), " ")
+                test_case["custom_preconds"] += data
 
     def post_description(self) -> list:
         """
@@ -62,20 +61,20 @@ class TRInteract:
         :return: list of status_codes returned for cases descriptions update
         """
         req_url = 'update_case/'
-        status_code = list()
+        status_codes = list()
 
         for case in self.info:
-            status_code.append(self.client.send_post
+            status_codes.append(self.client.send_post
                                (uri=req_url + str(case["id"]), data=case))
 
-        if not all(status_code):
+        if not all(status_codes):
             raise Exception("Warning, error updating descriptions")
         else:
             print("Post of descriptions was successful")
 
-        return status_code
+        return status_codes
 
-    def check_date(self) -> list:
+    def check_date(self, data) -> list:
         """
         The method checks for a date in description of test cases
         :return:
@@ -86,18 +85,30 @@ class TRInteract:
         date = list()
         if self.status_code == 200:
             for test_case in self.info:
-                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}',
+                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}',
                                  test_case["custom_preconds"]):
                     date.append(False)
                 else:
-                    date.append(True)
+                    if re.match(data, test_case["custom_preconds"]):
+                        date.append(True)
             return date
         return []
 
 
-if __name__ == "__main__":
-    attempt = TRInteract()
+def ret_trint():
+    return TRInteract()
+
+
+def main_TRInteract(date):
+    attempt = ret_trint()
     attempt.get_cases(project_id=1)
-    attempt.change_description()
-    if attempt.check_date() is not []:
+    attempt.change_description(data=date)
+    if attempt.check_date(data=date) is not []:
         attempt.post_description()
+        return attempt.status_code
+
+
+if __name__ == "__main__":
+    date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    print(date)
+    print(main_TRInteract(date))

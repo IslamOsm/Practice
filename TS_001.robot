@@ -1,69 +1,49 @@
 *** Settings ***
-Library           APIClient.APIClient    https://islamosm.testrail.io/    gch47858@cuoly.com    tSlFeh0QWe1bM8WfJsXU
 Library           DateTime
-Library           TRInteract.TRInteract
+Library           adding_data.py
 Library           Process
+Resource          keywords.robot
+
+Suite Setup     Login TestRail
+
 *** Variables ***
 ${REQ_URL_USERS}    get_users
 ${REQ_URL_CASES}    get_cases/1
 
-*** Keywords ***
-Run wrong cases
-    ${RESPONSE}=    Get Cases    234
-
 *** Test Cases ***
-Test added user
+Test Added User
     [Documentation]       The test case checks availability to get users info
-    ${RESPONSE_USERS}=    Send Get    ${REQ_URL_USERS}
-    ${RESPONSE_USERS_TEXT}=     Convert To String    ${RESPONSE_USERS[0]}
-    Should Contain    ${RESPONSE_USERS_TEXT}    Islam Osmanov
-    Should Contain    ${RESPONSE_USERS_TEXT}    gch47858@cuoly.com
+    Add User To TestRail
+    ${users_data}=    Get Users
+    ${username}=    Catenate    SEPARATOR=    Test    ${TIME}
+    Should Contain    ${users_data}    ${username}
 
 
-Test added_data
+Test Added Data
     [Documentation]       The test case checks process of adding date
-    Run Process    python    TRInteract.py
-    ${RESPONSE_CASES}=    Send Get    ${REQ_URL_CASES}
-    ${RESPONSE_CASES_TEXT}=     Convert To String    ${RESPONSE_CASES[0]}
-    ${CUR_TIME}=    Get Current Date    result_format=%d/%m/%Y
-    ${CUR_TIME_TEXT}=    Convert To String    ${CUR_TIME}
+    ${time}    Date Generation
+    main TRInteract    ${time}
+    ${response}    Get Cases    case_num=1
+    ${response_text}    convert to string    ${response}
+    Should Contain    ${response_text}    ${time}
 
-    Should Contain    ${RESPONSE_CASES_TEXT}    ${CUR_TIME_TEXT}
-
-Get cases status code
+Get Cases Status Code
     [Documentation]    The test case check correctness of method's status code
-    Get Cases    1
-    ${lib}=    Get Library Instance    TRInteract.TRInteract
-    Should Be Equal As Integers    ${lib.status_code}    200
+    ${time}    Date Generation
+    ${status_code}    main TRInteract    ${time}
+    Should Be Equal As Integers    ${status_code}    200
 
-Get cases with wrong data
+Get Cases With Wrong Data
     [Documentation]    The test case checks the inability of getting info
     ...                with wrong data
-    ${ERR_MSG}=    Run Keyword And Return Status    Run wrong cases
-    ${ERR_TEXT}=    Convert To String    ${ERR_MSG}
-    Should Be Equal    ${ERR_TEXT}    False
+    ${err_msg}=    Run Keyword And Return Status    Get Cases    case_num=234
+    ${err_text}=    Convert To String    ${err_msg}
+    Should Be Equal    ${err_text}    False
 
-Get cases data size
+Get Cases Data Size
     [Documentation]    The test case checks list of users
-    ${RESPONSE_USERS}=    Send Get    ${REQ_URL_USERS}
-    ${RESPONSE_SIZE}=    Get Length    ${RESPONSE_USERS}
-    Should Not Be Equal    ${RESPONSE_SIZE}    0
+    ${response_users}=    Send Get    ${REQ_URL_USERS}
+    ${response_size}=    Get Length    ${RESPONSE_USERS}
+    Should Not Be Equal    ${response_size}    0
 
-Post description
-    [Documentation]    The test case checks availability of adding date
-    Get Cases    1
-    Change Description
-    ${RESULT}=    post description
-    ${RESULT_TEXT}=    Convert To String    ${RESULT[0][1]}
-    Should Be Equal     ${RESULT_TEXT}    200
 
-Dates in cases
-    [Documentation]    The test cases check list of users with their
-    ...                information, after adding data in prediction
-    Get Cases    1
-    Change Description
-    ${DATES}=    Check Date
-    FOR    ${DATE}    IN    ${DATES[0]}
-        ${DATE_TEXT}=    Convert To String    ${DATE}
-        Should Be Equal    ${DATE_TEXT}  True
-    END
