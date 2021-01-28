@@ -10,10 +10,10 @@ congig.ini
 Parameters of user
 
 To run the programm launch the following programm of adding the user
-'''
+```
 python request.py
-'''
+```
 To run the tests 
-'''
+```
 pytest tests_request.py
-'''
+```
