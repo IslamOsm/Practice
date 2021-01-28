@@ -1,4 +1,3 @@
-import pytest
 from request import Client
 import configparser
 from TestRail import APIClient
@@ -46,7 +45,7 @@ class TestRequest:
 
     def test_auth_with_correct_data(self):
         """
-        The test case checks the response of the Client class method
+        Check the response of the Client class method
         when the auth data is entered correctly
         """
         client = Client(self.main_url,
@@ -56,7 +55,7 @@ class TestRequest:
 
     def test_auth_with_incorrect_data(self):
         """
-        The test case checks the response of the Client class method
+        Check the response of the Client class method
         when the auth data is entered incorrectly
         """
         username = "Brad"
@@ -68,7 +67,7 @@ class TestRequest:
 
     def test_add_user_with_incorrect_data(self):
         """
-        Checking the add_user method for incorrectly entered data
+        Check the add_user method for incorrectly entered data
         """
         buf_data = dict(self.add_data)
         buf_data["email"] = '1234'
@@ -78,7 +77,7 @@ class TestRequest:
 
     def test_add_user_with_empty_data(self):
         """
-        The test case checks the add_user method
+        Check the add_user method
         with some empty element in data
         """
         buf_data = dict(self.add_data)
@@ -90,7 +89,7 @@ class TestRequest:
 
     def test_added_user_in_test_rail(self):
         """
-        The test case checks
+        Check
         if a new user appears after executing the add_user method
         """
         buf_data = dict(self.add_data)

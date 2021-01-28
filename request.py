@@ -1,6 +1,26 @@
 import requests
 from bs4 import BeautifulSoup
 import configparser
+import time
+
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+main_url = config["TestRail"]["url_notAPI"]
+
+add_data = {"name": config["TestRail"]["name"],
+            "email": config["TestRail"]["email"],
+            "notifications": config["TestRail"]["notifications"],
+            "language": config["TestRail"]["language"],
+            "theme": config["TestRail"]["theme"],
+            "locale": config["TestRail"]["locale"],
+            "timezone": config["TestRail"]["timezone"],
+            "invite": config["TestRail"]["invite"],
+            "password": config["TestRail"]["password"],
+            "confirm": config["TestRail"]["password"],
+            "role_id": config["TestRail"]["role_id"],
+            "is_active": config["TestRail"]["is_active"],
+            "js_test": config["TestRail"]["js_test"]}
 
 
 class Client:
@@ -31,7 +51,7 @@ class Client:
         self.status_code = self.sess.get(self.__auth_url).status_code
         if self.status_code == 200:
             self.status_code = self.sess.post(self.__auth_url,
-                               self.auth_data).status_code
+                                              self.auth_data).status_code
             if self.status_code == 200:
                 contents = self.sess.get(self.__url + "dashboard").content
                 soup = BeautifulSoup(contents, 'lxml')
@@ -39,8 +59,7 @@ class Client:
                     self.token = soup.find('input',
                                            {'name': '_token'}).get('value')
                 except AttributeError as e:
-                    print("Failed to get token:\n" + str(e))
-                    return 401
+                    raise Exception("Failed to get token:\n" + str(e))
                 print("Auth was successful: " + str(self.status_code))
             else:
                 raise Exception("Error in auth: " +
@@ -64,29 +83,30 @@ class Client:
             return 401
 
 
+def make_client(url, username, password):
+    return Client(url, username,
+                  password)
+
+
+def time_generation():
+    now = int(time.time())
+    return now
+
+
+def return_data(time: int):
+    buf_data = dict(add_data)
+    buf_data["name"] = "Test" + str(time)
+    print(time)
+    buf_data["email"] = "Test" + str(time) + "@gmail.com"
+    return buf_data
+
+
 if __name__ == "__main__":
-    config = configparser.ConfigParser()
-    config.read("config.ini")
 
-    main_url = config["TestRail"]["url_notAPI"]
-
-    add_data = {"name": config["TestRail"]["name"],
-                "email": config["TestRail"]["email"],
-                "notifications": config["TestRail"]["notifications"],
-                "language": config["TestRail"]["language"],
-                "theme": config["TestRail"]["theme"],
-                "locale": config["TestRail"]["locale"],
-                "timezone": config["TestRail"]["timezone"],
-                "invite": config["TestRail"]["invite"],
-                "password": config["TestRail"]["password"],
-                "confirm": config["TestRail"]["password"],
-                "role_id": config["TestRail"]["role_id"],
-                "is_active": config["TestRail"]["is_active"],
-                "js_test": config["TestRail"]["js_test"]}
-
-    client = Client(main_url, config["TestRail"]["username"],
+    client = Client(main_url, "Brad",
                     config["TestRail"]["password"])
-    response_status = client.add_user(add_data=add_data)
+
+    response_status = client.add_user(add_data=return_data(time_generation()))
     if response_status == 200:
         print("Adding user was successful")
     else:
