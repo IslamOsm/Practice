@@ -1,3 +1,5 @@
+
+For TestRail
 Python 3.7
 
 request.py 
@@ -17,3 +19,8 @@ To run the tests
 ```
 pytest tests_request.py
 ```
+
+For Linux task
+Python 3.8
+Ubuntu 20.04.1 LTS
+
