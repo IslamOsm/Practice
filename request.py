@@ -59,7 +59,7 @@ class Client:
                     self.token = soup.find('input',
                                            {'name': '_token'}).get('value')
                 except AttributeError as e:
-                    raise Exception("Failed to get token:\n" + str(e))
+                    raise Exception("Failed to get token: " + str(e))
                 print("Auth was successful: " + str(self.status_code))
             else:
                 raise Exception("Error in auth: " +
@@ -96,14 +96,14 @@ def time_generation():
 def return_data(time: int):
     buf_data = dict(add_data)
     buf_data["name"] = "Test" + str(time)
-    print(time)
+    print("Unix time: ", time)
     buf_data["email"] = "Test" + str(time) + "@gmail.com"
     return buf_data
 
 
 if __name__ == "__main__":
 
-    client = Client(main_url, "Brad",
+    client = Client(main_url, config["TestRail"]["username"],
                     config["TestRail"]["password"])
 
     response_status = client.add_user(add_data=return_data(time_generation()))

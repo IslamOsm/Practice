@@ -2,7 +2,7 @@ from request import Client
 import configparser
 from TestRail import APIClient
 import time
-
+import pytest
 
 def config_data():
     config = configparser.ConfigParser()
@@ -59,11 +59,11 @@ class TestRequest:
         when the auth data is entered incorrectly
         """
         username = "Brad"
-        client = Client(self.main_url, username,
-                        self.config["TestRail"]["password"])
-
-        response_status = client.add_user(add_data=self.add_data)
-        assert response_status != 200
+        with pytest.raises(Exception,
+                           match="Failed to get token: "
+                                 "'NoneType' object has no attribute 'get'"):
+            Client(self.main_url, username,
+                   self.config["TestRail"]["password"])
 
     def test_add_user_with_incorrect_data(self):
         """
