@@ -51,7 +51,7 @@ class Client:
         self.status_code = self.sess.get(self.__auth_url).status_code
         if self.status_code == 200:
             self.status_code = self.sess.post(self.__auth_url,
-                               self.auth_data).status_code
+                                              self.auth_data).status_code
             if self.status_code == 200:
                 contents = self.sess.get(self.__url + "dashboard").content
                 soup = BeautifulSoup(contents, 'lxml')
@@ -59,8 +59,7 @@ class Client:
                     self.token = soup.find('input',
                                            {'name': '_token'}).get('value')
                 except AttributeError as e:
-                    print("Failed to get token:\n" + str(e))
-                    return 401
+                    raise Exception("Failed to get token: " + str(e))
                 print("Auth was successful: " + str(self.status_code))
             else:
                 raise Exception("Error in auth: " +
@@ -89,15 +88,15 @@ def make_client(url, username, password):
                   password)
 
 
-def time_gen():
+def time_generation():
     now = int(time.time())
     return now
 
 
-def ret_data(time: int):
+def return_data(time: int):
     buf_data = dict(add_data)
     buf_data["name"] = "Test" + str(time)
-    print(time)
+    print("Unix time: ", time)
     buf_data["email"] = "Test" + str(time) + "@gmail.com"
     return buf_data
 
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     client = Client(main_url, config["TestRail"]["username"],
                     config["TestRail"]["password"])
 
-    response_status = client.add_user(add_data=ret_data(time_gen()))
+    response_status = client.add_user(add_data=return_data(time_generation()))
     if response_status == 200:
         print("Adding user was successful")
     else:

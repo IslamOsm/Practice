@@ -4,50 +4,54 @@ Library           adding_data.py
 Library           req.py
 Library           Collections
 Library           APIClient.py    https://osmisl.testrail.io/    hzr11101@cuoly.com    .hUsjsGJDnid..VCRLV6
-Library           Datetime
-*** Variables ***
-${REQ_URL_USERS}    get_users
-${REQ_URL_CASES}    get_cases/1
 
 *** Keywords ***
 Time Generation
-    [Documentation]   Keyword generate unix time for user's add data
-    ${loc_time}    Time Gen
+    [Documentation]   Generate unix time for user's add data
+    ${loc_time}    Time Generation
     ${TIME}    Set Variable    ${loc_time}
+    Log To Console    The process of time generation
     Set Global Variable    ${TIME}
 
 Login TestRail
-    [Documentation]    Keyword instantinates Client class
+    [Documentation]    Instantinates Client class
     Time Generation
-    ${cl}=     Make Client    https://osmisl.testrail.io/index.php?/    hzr11101@cuoly.com    .hUsjsGJDnid..VCRLV6
+    ${cl}     Make Client    https://osmisl.testrail.io/index.php?/    hzr11101@cuoly.com    .hUsjsGJDnid..VCRLV6
     ${CLIENT}    Set Variable    ${cl}
+    Log To Console    Authentification to TestRail
     Set Global Variable    ${CLIENT}
 
 Add User To TestRail
-    [Documentation]    The keyword add user with changed data
-    ${data}=      Ret Data    ${TIME}
+    [Documentation]    Add user with changed data
+    ${data}      Return Data    ${TIME}
     Call Method    ${CLIENT}    add_user     ${data}
+    Log To Console    Adding current user to the TestRail
 
 Get Users
-    [Documentation]    The keyword gets list of users
-    ${response_users}=    Send Get    ${REQ_URL_USERS}
-    ${RESPONSE_USERS_TEXT}=     Convert To String    ${response_users[0]}
-    Return From Keyword    ${RESPONSE_USERS_TEXT}
+    [Documentation]    Gets list of users
+    ${response_users}    Send Get    get_users
+    ${RESPONSE_USERS_TEXT}     Convert To String    ${response_users[0]}
+    [Return]    ${RESPONSE_USERS_TEXT}
+    Log To Console    Get list of users
 
 Date Generation
-    [Documentation]    The keywords generates date with time for adding to the
+    [Documentation]    Generates date with time for adding to the
     ...                test case description
-    ${cur_time}=    Get Current Date    result_format=%d/%m/%Y %H:%M:%S
-    ${cur_time_text}=    Convert To String    ${cur_time}
-    Return From Keyword     ${cur_time_text}
+    ${cur_time}    Get Current Date    result_format=%d/%m/%Y %H:%M:%S
+    Log To Console   The process of date generation
+    [Return]     ${cur_time}
 
 Get Cases
-    [Documentation]    The keywords gets thre list of all cases in project
+    [Documentation]    Gets thre list of all cases in project
     [Arguments]    ${case_num}
-    ${tr}    Ret Trint
-    ${res}=    Call Method    ${tr}    get_cases    ${case_num}
-    Return From Keyword    ${res}
+    ${tr}    Return Trinteract
+    ${res}    Call Method    ${tr}    get_cases    ${case_num}
+    Log To Console    Get list of cases
+    [Return]    ${res}
 
 Teardown Actions
-    [Documentation]    Keyword is called after successful ending of the tests
+    [Documentation]    Called after successful ending of the tests
     Log To Console    The user was deleted
+
+Fail Test
+    Log to console    The user was not added

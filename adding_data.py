@@ -1,4 +1,4 @@
-from TestRail import APIClient
+from APIClient import APIClient
 import configparser
 import json
 import re
@@ -43,7 +43,7 @@ class TRInteract:
     def change_description(self, data) -> None:
         """
         Method changes or adds date in custom_preconds
-        :param info: list of json with information about test cases
+        :param data: list of json with information about test cases
         """
         for test_case in self.info:
             preconds = test_case["custom_preconds"]
@@ -77,6 +77,7 @@ class TRInteract:
     def check_date(self, data) -> list:
         """
         The method checks for a date in description of test cases
+        :param data:
         :return:
         If the data retrieval request was successful,
         it returns a list of items. In this case,
@@ -95,12 +96,12 @@ class TRInteract:
         return []
 
 
-def ret_trint():
+def return_trinteract():
     return TRInteract()
 
 
-def main_TRInteract(date):
-    attempt = ret_trint()
+def main_trinteract(date):
+    attempt = return_trinteract()
     attempt.get_cases(project_id=1)
     attempt.change_description(data=date)
     if attempt.check_date(data=date) is not []:
@@ -111,4 +112,4 @@ def main_TRInteract(date):
 if __name__ == "__main__":
     date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     print(date)
-    print(main_TRInteract(date))
+    print(main_trinteract(date))
