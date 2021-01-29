@@ -23,9 +23,9 @@ class TRInteract:
         """
         req_url = 'get_cases/' + str(project_id)
         self.info, self.status_code = self.client.send_get(req_url)
-
         if self.status_code == 200:
             print("Get info was successful")
+            return self.info
         else:
             raise Exception("Error in getting info about cases:"
                             + str(self.status_code))
@@ -43,11 +43,11 @@ class TRInteract:
     def change_description(self, data) -> None:
         """
         Method changes or adds date in custom_preconds
-        :param info: list of json with information about test cases
+        :param data: list of json with information about test cases
         """
         for test_case in self.info:
             preconds = test_case["custom_preconds"]
-            match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', preconds)
+            match = re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}', preconds)
             if not match:
                 test_case["custom_preconds"] += data
             else:
@@ -77,6 +77,7 @@ class TRInteract:
     def check_date(self, data) -> list:
         """
         The method checks for a date in description of test cases
+        :param data:
         :return:
         If the data retrieval request was successful,
         it returns a list of items. In this case,
@@ -85,7 +86,7 @@ class TRInteract:
         date = list()
         if self.status_code == 200:
             for test_case in self.info:
-                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}',
+                if not re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}',
                                  test_case["custom_preconds"]):
                     date.append(False)
                 else:
@@ -95,10 +96,20 @@ class TRInteract:
         return []
 
 
-if __name__ == "__main__":
-    attempt = TRInteract()
+def return_trinteract():
+    return TRInteract()
+
+
+def main_trinteract(date):
+    attempt = return_trinteract()
     attempt.get_cases(project_id=1)
-    date = datetime.datetime.now().strftime("%d/%m/%Y")
     attempt.change_description(data=date)
     if attempt.check_date(data=date) is not []:
         attempt.post_description()
+        return attempt.status_code
+
+
+if __name__ == "__main__":
+    date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    print(date)
+    print(main_trinteract(date))

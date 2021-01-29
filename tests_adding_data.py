@@ -1,6 +1,7 @@
 import pytest
 from adding_data import TRInteract
 from TestRail import APIError
+import datetime
 
 
 class TestTRInteract:
@@ -8,7 +9,7 @@ class TestTRInteract:
 
     def test_get_cases_status_code(self):
         """
-        Test cases checks correct request and
+        Check correct request and
         server availability to get a list of test cases
         """
         self.tr_request.get_cases(project_id=1)
@@ -16,7 +17,7 @@ class TestTRInteract:
 
     def test_wrong_get_cases_auth_status_code(self):
         """
-        The test case checks the behavior of the get_cases function
+        Check the behavior of the get_cases function
         when data is entered incorrectly
         """
         with pytest.raises(APIError):
@@ -24,7 +25,7 @@ class TestTRInteract:
 
     def test_get_cases_data(self):
         """
-        The test case checks for emptiness of the info variable to store data
+        Check for emptiness of the info variable to store data
         after the get request
         """
         self.tr_request.get_cases(project_id=1)
@@ -32,18 +33,23 @@ class TestTRInteract:
 
     def test_post_description(self):
         """
-        Test case checks the success of the post request
+        Check the success of the post request
         to change all test cases in the project to test rail
         """
         self.tr_request.get_cases(project_id=1)
-        self.tr_request.change_description()
-        assert all(self.tr_request.post_description()) is True
+        date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.tr_request.change_description(data=date)
+        if self.tr_request.check_date(data=date) is not []:
+            assert self.tr_request.post_description()[0][1] == 200
 
     def test_dates_in_cases(self):
         """
-        The test case checks the date content in the test description
+        Check the date content in the test description
         """
         self.tr_request.get_cases(project_id=1)
-        self.tr_request.change_description()
-        dates = self.tr_request.check_date()
+        date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.tr_request.change_description(data=date)
+        if self.tr_request.check_date(data=date) is not []:
+            self.tr_request.post_description()
+        dates = self.tr_request.check_date(data=date)
         assert False not in dates
