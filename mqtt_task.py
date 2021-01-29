@@ -9,7 +9,7 @@ config = config["MQTT"]
 
 class Client:
     """
-    Class Client is used for creating subscriber or publisher in process
+    Used for creating subscriber or publisher in process
     of communication with broker
     """
     def __init__(self, username: str, password: str):
@@ -22,12 +22,13 @@ class Client:
         self.username = username
         self.password = password
         self.retain = True
+        self.messages = list()
         self.client.username_pw_set(username=self.username,
                                     password=self.password)
 
-    def on_connect_pub(self, pyClient, userdata, flags, rc):
+    def on_connect_pub(self, pyClient, userdata, flags, rc) -> None:
         """
-        The method does connection to the broker for publisher
+        Do connection to the broker for publisher
         :param pyClient: the client instance for this callback
         :param userdata: the private user data as set in Client()
         :param flags: response flags sent by the broker
@@ -41,9 +42,9 @@ class Client:
             self.client.disconnect()
             self.exitFlag = True
 
-    def on_connect_sub(self, pvtClient, userdata, flags, rc):
+    def on_connect_sub(self, pvtClient, userdata, flags, rc) -> None:
         """
-        The method does connection to the broker for subscriber
+        Do connection to the broker for subscriber
         """
         if rc == 0:
             print("Connected to client! Return Code: " + str(rc))
@@ -52,7 +53,7 @@ class Client:
             print("Authentication Error! Return Code: " + str(rc))
             self.client.disconnect()
 
-    def on_publish(self, client, userdata, mid):
+    def on_publish(self, client, userdata, mid) -> None:
         """
         Called when a message that was to be sent using the publish()
         call has completed transmission to the broker.
@@ -65,14 +66,14 @@ class Client:
         """
         print("Logs: " + str(buf))
 
-    def on_disconnect(self, pvtClient, userdata, rc):
+    def on_disconnect(self, pvtClient, userdata, rc) -> None:
         """
         Called when the client disconnects from the broker
         """
         print("disconnecting reason  " + str(rc))
         self.client.disconnect()
 
-    def on_message(self, pvtClient, userdata, msg):
+    def on_message(self, pvtClient, userdata, msg) -> None:
         """
         Called when a message has been received on a topic
         that the client subscribes to and the message does not match
@@ -85,8 +86,18 @@ class Client:
         print("Message retain: " + str(msg.retain))
         print("============================\n")
 
+        self.messages.append(str(msg.payload.decode()))
+
         if msg.payload.decode() == "exit(0)":
             self.client.disconnect()
+
+    def stop(self) -> None:
+        """
+        Stop client
+        :return: None
+        """
+        self.client.loop_stop()
+        self.client.disconnect()
 
 
 class Publisher(Client):
@@ -98,23 +109,18 @@ class Publisher(Client):
         self.client.on_disconnect = self.on_disconnect
         self.pub_QOS = int(config["pub_QOS"])
         self.client.connect(self.host, self.port, self.keepAlive)
-
-    def public_message(self):
-        """
-        Method is called for sending info to the broker
-        """
         self.client.loop_start()
+
+    def public_message(self, payload):
+        """
+        Call for sending info to the broker
+        """
         time.sleep(2)
-        while not self.exitFlag:
-            time.sleep(.6)
-            payload = input("\nMessage: ")
-            self.client.publish(self.topic_name,
-                                payload,
-                                self.pub_QOS,
-                                self.retain)
-            if payload == "exit(0)":
-                self.client.disconnect()
-        self.client.loop_stop()
+        print("Message: " + payload)
+        self.client.publish(self.topic_name,
+                            payload,
+                            self.pub_QOS,
+                            self.retain)
 
 
 class Subscribe(Client):
@@ -123,27 +129,92 @@ class Subscribe(Client):
         self.client.on_message = self.on_message
         self.client.on_log = self.on_log
         self.client.on_connect = self.on_connect_sub
+        self.client.connect(self.host, self.port, self.keepAlive)
 
     def get_message(self):
         """
-        Method is called for getting info from the broker
+        Call for getting info from the broker
         """
-        self.client.connect(self.host, self.port, self.keepAlive)
-        time.sleep(2)
-        self.client.loop_forever()
+        time.sleep(1)
+        self.client.loop_start()
+        time.sleep(1)
+
+
+def generate_publisher() -> Publisher:
+    """
+    Robot Framework keyword
+    Instantiate Publisher class
+    :return: class
+    """
+    publ_username = config["publ_username"]
+    publ_password = config["publ_password"]
+    publish = Publisher(publ_username, publ_password)
+    return publish
+
+
+def generate_subscriber() -> Subscribe:
+    """
+    Robot Framework keyword
+    Instantiate Subscribe class
+    :return: class
+    """
+    sub_username = config["sub_username"]
+    sub_password = config["sub_password"]
+    subscribe = Subscribe(sub_username, sub_password)
+    return subscribe
+
+
+def get_message(subscribe) -> None:
+    """
+    Get message from the topic
+    :param subscribe: class of Subscribe
+    :return: None
+    """
+    subscribe.get_message()
+
+
+def return_list_messages(subscribe) -> None:
+    """
+    Robot Framework keyword
+    :param subscribe: class of Subscribe
+    :return: None
+    """
+    return subscribe.messages
+
+
+def send_message(message: str, publish) -> None:
+    """
+    Robot Framework keyword
+    :param message: sending message
+    :param publish: class Publisher
+    :return: None
+    """
+    publish.public_message(message)
+
+
+def stop(client) -> None:
+    """
+    Robot Framework keyword
+    Stop client action
+    :param client: class Subscribe or Publisher
+    :return: None
+    """
+    client.stop()
 
 
 if __name__ == "__main__":
-    choose = int(input("If you want to publish message enter the 0, "
-                       "if you want to get message enter the 1: "))
-    if choose == 0:
-        publ_username = config["publ_username"]
-        publ_password = config["publ_password"]
-        publ = Publisher(publ_username, publ_password)
-        publ.public_message()
-    elif choose == 1:
-        sub_username = config["sub_username"]
-        sub_password = config["sub_password"]
-        sub = Subscribe(sub_username, sub_password)
-        sub.get_message()
 
+    subscriber = generate_subscriber()
+    publisher = generate_publisher()
+
+    send_message("Hi", publisher)
+    time.sleep(3)
+    get_message(subscriber)
+    send_message("Ho", publisher)
+    time.sleep(3)
+    get_message(subscriber)
+
+    print(return_list_messages(subscriber))
+
+    stop(publisher)
+    stop(subscriber)

@@ -1,10 +1,23 @@
-# Practice
+# MQTT PRACTICE
 Python 3.9
-Broker: "test.mosquitto.org"
+
+Robot Framework 3.2.2
+
+Broker: "test.mosquitto.org" 
+
 Using topic: "mqtttest/TC_001"
-Короткая инструкция по использованию:
-1) Запускаем в терминале mqtt_task.py и вводим число 0 (создан клиент для публикования)
-2) Вводим сообщение, которое хотим отправить брокеру
-3) Еще раз запускаем в терминале mqtt_task.py и вводим число 1 (создан клиет для подписки)
-4)Проверяем сообщение и пробуем еще раз отправить что-нибудь
+
+mqtt_task.py
+
+Execution of interaction between subscriber and publisher through a broker
+
+To run the code:  ```python matt_task.py```
+
+
+mqtt.robot
+
+Check whether subscribers can accept messages from a publisher
+
+To run the code: ```robot mqtt.robot```
+
 
