@@ -69,35 +69,54 @@ class Client:
             raise Exception("Access error: " +
                             str(self.status_code))
 
-    def add_user(self, add_data: dict) -> int:
+    def add_user(self, adding_data: dict) -> int:
         """
         Post request for adding the user
-        :param add_data: data for adding the user
+        :param adding_data: data for adding the user
         :return: status code
         """
         if self.token is not None:
-            add_data['_token'] = self.token
-            response = self.sess.post(self.__add_url, add_data)
+            adding_data['_token'] = self.token
+            response = self.sess.post(self.__add_url, adding_data)
             return response.status_code
         else:
             return 401
 
 
-def make_client(url, username, password):
+def make_client(url, username, password) -> Client:
+    """
+    Robot Framework keyword
+    Instantiate Client class
+    :param url: main url for connection
+    :param username:
+    :param password:
+    :return: class
+    """
     return Client(url, username,
                   password)
 
 
-def time_generation():
+def time_create() -> int:
+    """
+    Robot Framework keyword
+    Generate unix time
+    :return: unix time
+    """
     now = int(time.time())
     return now
 
 
-def return_data(time: int):
+def return_data(unix: int) -> dict:
+    """
+    Robot Framework keyword
+    Change and return user data
+    :param unix: unix time for registration
+    :return: dictionary with changed name and email
+    """
     buf_data = dict(add_data)
-    buf_data["name"] = "Test" + str(time)
-    print("Unix time: ", time)
-    buf_data["email"] = "Test" + str(time) + "@gmail.com"
+    buf_data["name"] = "Test" + str(unix)
+    print("Unix time: ", unix)
+    buf_data["email"] = "Test" + str(unix) + "@gmail.com"
     return buf_data
 
 
@@ -106,7 +125,7 @@ if __name__ == "__main__":
     client = Client(main_url, config["TestRail"]["username"],
                     config["TestRail"]["password"])
 
-    response_status = client.add_user(add_data=return_data(time_generation()))
+    response_status = client.add_user(adding_data=return_data(time_create()))
     if response_status == 200:
         print("Adding user was successful")
     else:

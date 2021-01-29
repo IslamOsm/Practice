@@ -1,48 +1,42 @@
 *** Settings ***
 Library           DateTime
+Variables         MyVariables.py
 Library           adding_data.py
-Library           req.py
+Library           request.py
 Library           Collections
-Library           APIClient.py    https://osmisl.testrail.io/    hzr11101@cuoly.com    .hUsjsGJDnid..VCRLV6
+Library           APIClient.py    ${api_url}    ${username}    ${password}
 
 *** Keywords ***
-Time Generation
-    [Documentation]   Generate unix time for user's add data
-    ${loc_time}    Time Generation
-    ${TIME}    Set Variable    ${loc_time}
-    Log To Console    The process of time generation
-    Set Global Variable    ${TIME}
-
 Login TestRail
-    [Documentation]    Instantinates Client class
-    Time Generation
-    ${cl}     Make Client    https://osmisl.testrail.io/index.php?/    hzr11101@cuoly.com    .hUsjsGJDnid..VCRLV6
-    ${CLIENT}    Set Variable    ${cl}
+    [Documentation]    Instantinate Client class and create class variable CLIENT
+    ${cl}     Make Client    ${main_url}    ${username}    ${password}
+    Set Suite Variable    ${CLIENT}    ${cl}
     Log To Console    Authentification to TestRail
-    Set Global Variable    ${CLIENT}
 
 Add User To TestRail
-    [Documentation]    Add user with changed data
-    ${data}      Return Data    ${TIME}
+    [Documentation]    Add user with changed data and set suite variable TIME
+    ${loc_time}    Time Create
+    ${data}      Return Data    ${loc_time}
     Call Method    ${CLIENT}    add_user     ${data}
-    Log To Console    Adding current user to the TestRail
+    Set Suite Variable    ${TIME}    ${loc_time}
+    Log To Console    Add current user to the TestRail
 
 Get Users
-    [Documentation]    Gets list of users
+    [Documentation]    Get list of users
     ${response_users}    Send Get    get_users
-    ${RESPONSE_USERS_TEXT}     Convert To String    ${response_users[0]}
-    [Return]    ${RESPONSE_USERS_TEXT}
+    ${response_users_text}     Convert To String    ${response_users[0]}
+    [Return]    ${response_users_text}
     Log To Console    Get list of users
 
 Date Generation
-    [Documentation]    Generates date with time for adding to the
-    ...                test case description
+    [Documentation]    Generate date with time for adding to the
+    ...                test case description and return it
     ${cur_time}    Get Current Date    result_format=%d/%m/%Y %H:%M:%S
     Log To Console   The process of date generation
     [Return]     ${cur_time}
 
 Get Cases
-    [Documentation]    Gets thre list of all cases in project
+    [Documentation]    Get the list of all cases in project and return list
     [Arguments]    ${case_num}
     ${tr}    Return Trinteract
     ${res}    Call Method    ${tr}    get_cases    ${case_num}
@@ -50,8 +44,5 @@ Get Cases
     [Return]    ${res}
 
 Teardown Actions
-    [Documentation]    Called after successful ending of the tests
-    Log To Console    The user was deleted
-
-Fail Test
-    Log to console    The user was not added
+    [Documentation]    Call after successful ending of the tests
+    Log To Console     The user was deleted
