@@ -18,7 +18,7 @@ class TRInteract:
 
     def get_cases(self, project_id: int) -> None:
         """
-        The function receives data about all test cases in any project
+        Receive data about all test cases in any project
         :param project_id: id of the chosen project
         """
         req_url = 'get_cases/' + str(project_id)
@@ -33,7 +33,7 @@ class TRInteract:
     @staticmethod
     def print_info(info: str) -> None:
         """
-        Recording list of json in info.json for reading
+        Record list of json in info.json for reading
         :param info: list of json data
         """
         with open("info.json", "a") as write_file:
@@ -42,22 +42,22 @@ class TRInteract:
 
     def change_description(self, data) -> None:
         """
-        Method changes or adds date in custom_preconds
-        :param data: list of json with information about test cases
+        Change or add date in custom_preconds
+        :param data: some information for adding to the description
         """
-        for test_case in self.info:
-            preconds = test_case["custom_preconds"]
+        for case in self.info:
+            preconds = case["custom_preconds"]
             match = re.search(r'\d{1,2}/\d{1,2}/\d{4}\s\d{2}:\d{2}:\d{2}', preconds)
             if not match:
-                test_case["custom_preconds"] += data
+                case["custom_preconds"] += data
             else:
-                test_case["custom_preconds"] = test_case["custom_preconds"].\
+                case["custom_preconds"] = case["custom_preconds"].\
                     replace(match.group(), " ")
-                test_case["custom_preconds"] += data
+                case["custom_preconds"] += data
 
     def post_description(self) -> list:
         """
-        Sending modified data to the server
+        Send modified data to the server
         :return: list of status_codes returned for cases descriptions update
         """
         req_url = 'update_case/'
@@ -76,8 +76,8 @@ class TRInteract:
 
     def check_date(self, data) -> list:
         """
-        The method checks for a date in description of test cases
-        :param data:
+        Check for a date in description of test cases
+        :param data: information for checking
         :return:
         If the data retrieval request was successful,
         it returns a list of items. In this case,
@@ -96,20 +96,12 @@ class TRInteract:
         return []
 
 
-def return_trinteract():
-    return TRInteract()
-
-
-def main_trinteract(date):
-    attempt = return_trinteract()
+if __name__ == "__main__":
+    date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    attempt = TRInteract()
     attempt.get_cases(project_id=1)
     attempt.change_description(data=date)
     if attempt.check_date(data=date) is not []:
         attempt.post_description()
-        return attempt.status_code
-
-
-if __name__ == "__main__":
-    date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    print(date)
-    print(main_trinteract(date))
+    else:
+        print("Date was not found")

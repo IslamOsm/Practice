@@ -20,7 +20,7 @@ class TestTRInteract:
         Check the behavior of the get_cases function
         when data is entered incorrectly
         """
-        with pytest.raises(APIError):
+        with pytest.raises(APIError, match="TestRail API returned HTTP"):
             self.tr_request.get_cases(project_id=2)
 
     def test_get_cases_data(self):
