@@ -51,5 +51,6 @@ class TestTRInteract:
         self.tr_request.change_description(data=date)
         if self.tr_request.check_date(data=date) is not []:
             self.tr_request.post_description()
+        self.tr_request.get_cases(project_id=1)
         dates = self.tr_request.check_date(data=date)
         assert False not in dates
