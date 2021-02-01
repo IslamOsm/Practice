@@ -1,2 +1,5 @@
 **/*.xml
 **/*.html
+__pycache__/MyVariables.cpython-37.pyc
+__pycache__/adding_data.cpython-37.pyc
+__pycache__/APIClient.cpython-37.pyc
