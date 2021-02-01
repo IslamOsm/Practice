@@ -12,10 +12,8 @@ try:
     config = configparser.ConfigParser()
     config.read(config_file)
 
-    api_url = config.get('TestRail', 'url')
-    main_url = config.get('TestRail', 'url_notAPI')
-    username = config.get('TestRail', 'username')
-    password = config.get('TestRail', 'password')
+    data = dict()
+    data = config['TestRail']
 
 
 except (configparser.Error, configparser.NoSectionError,

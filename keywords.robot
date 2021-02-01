@@ -4,12 +4,14 @@ Variables         MyVariables.py
 Library           adding_data.py
 Library           request.py
 Library           Collections
-Library           APIClient.py    ${api_url}    ${username}    ${password}
+Library           APIClient.py    ${data}[url]    ${data}[username]
+...                               ${data}[password]
 
 *** Keywords ***
 Login TestRail
     [Documentation]    Instantinate Client class and create class variable CLIENT
-    ${cl}     Make Client    ${main_url}    ${username}    ${password}
+    ${cl}     Make Client    ${data}[url_notAPI]    ${data}[username]
+    ...                      ${data}[password]
     Set Suite Variable    ${CLIENT}    ${cl}
     Log To Console    Authentification to TestRail
 
