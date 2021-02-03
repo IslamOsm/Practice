@@ -1,3 +1,19 @@
+Python 3.9
+
+Robot Framework 3.2.2
+
+Internal Libraries:
+
+-- DateTime
+
+-- Process
+
+TS_002.robot
+
+Check process of adding user to TestRail
+
+To run the code: ```robot TS_002.robot```
+
 
 For TestRail
 Python 3.7
@@ -11,7 +27,7 @@ Performs tests for the request.py
 congig.ini
 Parameters of user
 
-To run the programm launch the following programm of adding the user
+To run the program launch the following program of adding the user
 ```
 python request.py
 ```
