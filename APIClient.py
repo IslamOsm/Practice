@@ -62,20 +62,23 @@ class APIClient:
         if response.status_code > 201:
             try:
                 error = response.json()
-            except:     # response.content not formatted as JSON
+            except Exception as e:     # response.content not formatted as JSON
                 error = str(response.content)
-            raise APIError('TestRail API returned HTTP %s (%s)' % (response.status_code, error))
+                print("Exception raised: " + str(e))
+                raise APIError('TestRail API returned HTTP %s (%s)'
+                               % (response.status_code, error))
         else:
             if uri[:15] == 'get_attachment/':   # Expecting file, not JSON
                 try:
                     open(data, 'wb').write(response.content)
-                    return (data)
-                except:
-                    return ("Error saving attachment.")
+                    return data
+                except Exception as e:
+                    print("Exception raised: " + str(e))
             else:
                 try:
                     return response.json(), response.status_code
-                except: # Nothing to return
+                except Exception as e:
+                    print("Exception raised: " + str(e))
                     return {}
 
 

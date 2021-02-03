@@ -107,23 +107,11 @@ def return_trinteract() -> TRInteract:
     return TRInteract()
 
 
-def main_trinteract(current_date) -> int:
-    """
-    Robot Framework keyword
-    Instantiate TRInteract class, get cases info, change description and
-    post description
-    :param current_date: current date
-    :return: status code of post request
-    """
-    attempt = return_trinteract()
-    attempt.get_cases(project_id=1)
-    attempt.change_description(data=current_date)
-    if attempt.check_date(data=current_date) is not []:
-        attempt.post_description()
-        return attempt.status_code
-
-
 if __name__ == "__main__":
     date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    print(date)
-    print(main_trinteract(date))
+    attempt = return_trinteract()
+    attempt.get_cases(project_id=1)
+    attempt.change_description(data=date)
+    if attempt.check_date(data=date) is not []:
+        attempt.post_description()
+

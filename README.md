@@ -8,12 +8,6 @@ Internal Libraries:
 
 -- Process
 
-TS_001.robot
-
-Unit tests for request.py and adding_data.py
-
-To run the code: ```robot TS_001.robot```
-
 TS_002.robot
 
 Check process of adding user to TestRail

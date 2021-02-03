@@ -11,10 +11,7 @@ try:
 
     config = configparser.ConfigParser()
     config.read(config_file)
-
-    data = dict()
     data = config['TestRail']
-
 
 except (configparser.Error, configparser.NoSectionError,
         configparser.NoOptionError) as e:

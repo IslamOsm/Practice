@@ -106,11 +106,11 @@ def time_create() -> int:
     return now
 
 
-def return_data(unix: int) -> dict:
+def modify_return_data(unix: int) -> dict:
     """
     Robot Framework keyword
-    Change and return user data
-    :param unix: unix time for registration
+    Generate and return user information
+    :param unix: unix time for user generation
     :return: dictionary with changed name and email
     """
     buf_data = dict(add_data)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     client = Client(main_url, config["TestRail"]["username"],
                     config["TestRail"]["password"])
 
-    response_status = client.add_user(adding_data=return_data(time_create()))
+    response_status = client.add_user(modify_return_data(time_create()))
     if response_status == 200:
         print("Adding user was successful")
     else:
