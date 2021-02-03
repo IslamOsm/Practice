@@ -4,7 +4,7 @@ Suite Setup      Login TestRail
 
 *** Test Cases ***
 Add User
-    [Documentation]    Check adding user in TestRail
+    [Documentation]    Check adding user to TestRail
     Add User To TestRail
     ${users_data}    Get Users
     ${username}    Catenate    SEPARATOR=    Test    ${TIME}
