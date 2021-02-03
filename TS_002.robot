@@ -11,7 +11,7 @@ Add User
     ${username}    Catenate    SEPARATOR=    Test    ${TIME}
     Should Contain    ${users_data}    ${username}
     ...               Users list from TR doesn't contain user ${username}
-    Log To Console    Users list from TR contain user
+    Log To Console    \n\rUsers list from TR contains user
     [Teardown]    Run Keywords
     ...    Run Keyword If Test Passed    Teardown Actions
     ...    AND    Run Keyword If Test Failed    Log To Console    \n\rTest Failed
