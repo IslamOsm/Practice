@@ -21,7 +21,7 @@ class Client:
         self.keepAlive = int(config["keepAlive"])
         self.username = username
         self.password = password
-        self.retain = True
+        self.retain = False
         self.messages = list()
         self.client.username_pw_set(username=self.username,
                                     password=self.password)
@@ -87,6 +87,7 @@ class Client:
         print("============================\n")
 
         self.messages.append(str(msg.payload.decode()))
+        print(self.messages)
 
         if msg.payload.decode() == "exit(0)":
             self.client.disconnect()
@@ -100,121 +101,4 @@ class Client:
         self.client.disconnect()
 
 
-class Publisher(Client):
-    def __init__(self, username: str, password: str):
-        super().__init__(username, password)
-        self.client.on_publish = self.on_publish
-        self.client.on_connect = self.on_connect_pub
-        self.client.on_log = self.on_log
-        self.client.on_disconnect = self.on_disconnect
-        self.pub_QOS = int(config["pub_QOS"])
-        self.client.connect(self.host, self.port, self.keepAlive)
-        self.client.loop_start()
 
-    def public_message(self, payload):
-        """
-        Call for sending info to the broker
-        """
-        time.sleep(2)
-        print("Message: " + payload)
-        self.client.publish(self.topic_name,
-                            payload,
-                            self.pub_QOS,
-                            self.retain)
-
-
-class Subscribe(Client):
-    def __init__(self, username: str, password: str):
-        super().__init__(username, password)
-        self.client.on_message = self.on_message
-        self.client.on_log = self.on_log
-        self.client.on_connect = self.on_connect_sub
-        self.client.connect(self.host, self.port, self.keepAlive)
-
-    def get_message(self):
-        """
-        Call for getting info from the broker
-        """
-        time.sleep(1)
-        self.client.loop_start()
-        time.sleep(1)
-
-
-def generate_publisher() -> Publisher:
-    """
-    Robot Framework keyword
-    Instantiate Publisher class
-    :return: class
-    """
-    publ_username = config["publ_username"]
-    publ_password = config["publ_password"]
-    publish = Publisher(publ_username, publ_password)
-    return publish
-
-
-def generate_subscriber() -> Subscribe:
-    """
-    Robot Framework keyword
-    Instantiate Subscribe class
-    :return: class
-    """
-    sub_username = config["sub_username"]
-    sub_password = config["sub_password"]
-    subscribe = Subscribe(sub_username, sub_password)
-    return subscribe
-
-
-def get_message(subscribe) -> None:
-    """
-    Get message from the topic
-    :param subscribe: class of Subscribe
-    :return: None
-    """
-    subscribe.get_message()
-
-
-def return_list_messages(subscribe) -> None:
-    """
-    Robot Framework keyword
-    :param subscribe: class of Subscribe
-    :return: None
-    """
-    return subscribe.messages
-
-
-def send_message(message: str, publish) -> None:
-    """
-    Robot Framework keyword
-    :param message: sending message
-    :param publish: class Publisher
-    :return: None
-    """
-    publish.public_message(message)
-
-
-def stop(client) -> None:
-    """
-    Robot Framework keyword
-    Stop client action
-    :param client: class Subscribe or Publisher
-    :return: None
-    """
-    client.stop()
-
-
-if __name__ == "__main__":
-
-    subscriber = generate_subscriber()
-    publisher = generate_publisher()
-
-    send_message("Hi", publisher)
-    time.sleep(3)
-    get_message(subscriber)
-    send_message("Ho", publisher)
-    time.sleep(3)
-    get_message(subscriber)
-
-    print(return_list_messages(subscriber))
-
-    stop(publisher)
-    stop(subscriber)
