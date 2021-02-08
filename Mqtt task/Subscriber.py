@@ -1,4 +1,5 @@
 from mqtt_task import Client
+import time
 
 
 class Subscriber(Client):
@@ -10,7 +11,11 @@ class Subscriber(Client):
         self.client.connect(self.host, self.port, self.keepAlive)
         self.client.loop_start()
 
+    def start_subscriber(self):
+        self.client.loop_start()
+
     def return_messages(self):
+        time.sleep(3)
         print(self.messages)
         return self.messages
 

@@ -11,7 +11,7 @@ mqtt_task.py
 
 Execution of interaction between subscriber and publisher through a broker
 
-To run the code:  ```python matt_task.py```
+To run the code:  ```python mqtt_task.py```
 
 
 mqtt.robot
