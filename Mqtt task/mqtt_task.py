@@ -37,8 +37,8 @@ class Client:
         if rc == 0:
             print("Client connected")
             self.exitFlag = False
-        elif rc == 5:
-            print("Authentication Error! Return Code: " + str(rc))
+        else:
+            print("Failed to connect! Return Code: " + str(rc))
             self.client.disconnect()
             self.exitFlag = True
 
@@ -49,8 +49,8 @@ class Client:
         if rc == 0:
             print("Connected to client! Return Code: " + str(rc))
             result = self.client.subscribe(self.topic_name, qos=2)
-        elif rc == 5:
-            print("Authentication Error! Return Code: " + str(rc))
+        else:
+            print("Failed to connect! Return Code: " + str(rc))
             self.client.disconnect()
 
     def on_publish(self, client, userdata, mid) -> None:
@@ -58,7 +58,7 @@ class Client:
         Called when a message that was to be sent using the publish()
         call has completed transmission to the broker.
         """
-        print("Payload Published: " + str(mid))
+        print("Payload Published, mid = " + str(mid))
 
     def on_log(self, client, userdata, level, buf):
         """
@@ -70,8 +70,7 @@ class Client:
         """
         Called when the client disconnects from the broker
         """
-        print("disconnecting reason  " + str(rc))
-        self.client.disconnect()
+        print("Disconnecting reason  " + str(rc))
 
     def on_message(self, pvtClient, userdata, msg) -> None:
         """

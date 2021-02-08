@@ -5,7 +5,7 @@ Robot Framework 3.2.2
 
 Broker: "test.mosquitto.org" 
 
-Using topic: "mqtttest/TC_001"
+Using topic: "mqtttest/TC_002"
 
 mqtt_task.py
 
