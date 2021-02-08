@@ -58,7 +58,7 @@ class Client:
         Called when a message that was to be sent using the publish()
         call has completed transmission to the broker.
         """
-        print("Payload Published, mid = " + str(mid))
+        print("\n\rPayload Published, mid = " + str(mid))
 
     def on_log(self, client, userdata, level, buf):
         """
