@@ -5,14 +5,13 @@ Library          Mqtt task/Subscriber.py    ${datamqtt}[sub_username]     ${data
 Library          Mqtt task/Publisher.py    ${datamqtt}[publ_username]    ${datamqtt}[publ_password]
 Library          helpful.py
 
-#Suite Setup      Login TestRail
+
 Suite Teardown   Log To Console    \n\rSuite Teardown started
 
 *** Test Cases ***
 Check User
     [Documentation]
     [Tags]    testrailid=1    defects=
-    Log To Console    ${datamqtt} DATA
     Login TestRail
     ${users_data}    Get Users
     Should Contain    ${users_data}    Islam Osmanov
@@ -38,7 +37,6 @@ Prime number
     [Documentation]    Check that time is a prime number
     [Tags]    testrailid=3    defects=
     ${date}    Time Create
-    Log To Console    ${date}
     ${value}    Is Prime    ${date}
     Should Be True    ${value}    The date isn't an primary number
 
