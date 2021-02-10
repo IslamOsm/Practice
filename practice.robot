@@ -38,7 +38,7 @@ Prime number
     [Tags]    testrailid=3    defects=
     ${date}    Time Create
     ${value}    Is Prime    ${date}
-    Should Be True    ${value}    The date isn't an primary number
+    Should Be True    ${value}    The date isn't a primary number
 
 
 Platform Version
