@@ -4,6 +4,7 @@ import configparser
 import time
 
 config = configparser.ConfigParser()
+
 config.read("config.ini")
 
 main_url = config["TestRail"]["url_notAPI"]
