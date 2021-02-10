@@ -1,7 +1,7 @@
 *** Settings ***
 Variables         RobotVariables.py
-Library           Subscriber.py    ${data}[sub_username]     ${data}[sub_password]
-Library           Publisher.py    ${data}[publ_username]    ${data}[publ_password]
+Library           Subscriber.py    ${datamqtt}[sub_username]     ${datamqtt}[sub_password]
+Library           Publisher.py    ${datamqtt}[publ_username]    ${datamqtt}[publ_password]
 
 
 *** Test Cases ***

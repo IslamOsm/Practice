@@ -83,3 +83,14 @@ mqtt.robot
 Check whether subscribers can accept messages from a publisher
 
 To run the code: ```robot mqtt.robot```
+
+#PRACTICE
+Python 3.7
+
+Robot Framework 3.2.2
+
+To execute practice.robot suite with reporting to TestRail
+
+```robot --listener src/TestRailListener.py:testuser123i.testrail.io:etm75306@zwoho.com:7aetO03XW6tVycV00UPk:1:https:update practice.robot```
+
+Report is sent to TestRail run_id=1 in example below 
