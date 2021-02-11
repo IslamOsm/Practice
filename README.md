@@ -1,3 +1,5 @@
+# Robot Test
+
 Python 3.9
 
 Robot Framework 3.2.2
@@ -15,7 +17,8 @@ Check process of adding user to TestRail
 To run the code: ```robot TS_002.robot```
 
 
-For TestRail
+# Python TestRail tests
+
 Python 3.7
 
 request.py 
@@ -36,11 +39,13 @@ To run the tests
 pytest tests_request.py
 ```
 
-For Linux task
+# Linux Task
+
 Python 3.8
+
 Ubuntu 20.04.1 LTS
 
-Python 3.7
+# Add Data to TestRail
 
 adding_data.py
 
@@ -62,7 +67,9 @@ To run the code
 pytest tests_adding_data.py
 ```
 
+
 # MQTT PRACTICE
+
 Python 3.9
 
 Robot Framework 3.2.2
@@ -84,7 +91,8 @@ Check whether subscribers can accept messages from a publisher
 
 To run the code: ```robot mqtt.robot```
 
-#PRACTICE
+# PRACTICE
+
 Python 3.7
 
 Robot Framework 3.2.2
